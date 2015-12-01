@@ -1,6 +1,8 @@
 # canter
 Canter.js is a small dataset query processing helper library in JavaScript offering Declarative and Functional programming style composable functions.
 
+![Canter Logo](https://raw.githubusercontent.com/loganis/canter/master/docs/canter.png)
+
 ## Documentation
 
   - `npm run doc`
