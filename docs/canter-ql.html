@@ -1,0 +1,1109 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+  <title>canter-ql.js</title>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, target-densitydpi=160dpi, initial-scale=1.0; maximum-scale=1.0; user-scalable=0;">
+  <link rel="stylesheet" media="all" href="docco.css" />
+</head>
+<body>
+  <div id="container">
+    <div id="background"></div>
+    
+      <ul id="jump_to">
+        <li>
+          <a class="large" href="javascript:void(0);">Jump To &hellip;</a>
+          <a class="small" href="javascript:void(0);">+</a>
+          <div id="jump_wrapper">
+          <div id="jump_page_wrapper">
+            <div id="jump_page">
+              
+                
+                <a class="source" href="canter-ql.html">
+                  canter-ql.js
+                </a>
+              
+                
+                <a class="source" href="canter.html">
+                  canter.js
+                </a>
+              
+            </div>
+          </div>
+        </li>
+      </ul>
+    
+    <ul class="sections">
+        
+          <li id="title">
+              <div class="annotation">
+                  <h1>canter-ql.js</h1>
+              </div>
+          </li>
+        
+        
+        
+        <li id="section-1">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-1">&#182;</a>
+              </div>
+              <ul>
+<li><a href="#preprocess">Prepocess</a></li>
+<li><a href="#gooh">Gooh</a></li>
+<li><a href="#goog">Goog</a></li>
+<li><a href="#cql">CQL</a></li>
+</ul>
+
+            </div>
+            
+        </li>
+        
+        
+        <li id="section-2">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-2">&#182;</a>
+              </div>
+              <h3 id="tabular-format">Tabular format</h3>
+<p>In postprocess operations we refer to values using the following conventions.</p>
+<table>
+<tr><td>&nbsp;</td><td><strong>col1</strong></td><td><strong>col2</strong></td><td><strong>col3</strong></td></tr>
+<tr><td><em>row1</em></td><td>v11</td><td>v12</td><td>v13</td></tr>
+<tr><td><em>row2</em></td><td>v21</td><td>v22</td><td>v23</td></tr>
+</table>
+
+<blockquote>
+<p>in <em>row1</em></p>
+<blockquote>
+<p><code>row[&#39;col1&#39;]</code> is <code>&#39;v11&#39;</code>
+<code>col[&#39;col1&#39;]</code> is <code>[&#39;v11&#39;,&#39;v21&#39;]</code></p>
+</blockquote>
+<p>in <em>row2</em></p>
+<blockquote>
+<p><code>row[&#39;col1&#39;]</code> is <code>&#39;v21&#39;</code>
+<code>col[&#39;col1&#39;]</code> is <code>[&#39;v11&#39;,&#39;v21&#39;]</code></p>
+</blockquote>
+</blockquote>
+
+            </div>
+            
+        </li>
+        
+        
+        <li id="section-3">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-3">&#182;</a>
+              </div>
+              <p><code>funs</code><br />Temporal demo data</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">var</span> funs = { <span class="hljs-string">"Page"</span>: <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">row</span>) </span>{ <span class="hljs-keyword">return</span> row[<span class="hljs-string">'kpia'</span>] * <span class="hljs-number">2</span> + row[<span class="hljs-string">"kpib"</span>] + sum(col[<span class="hljs-string">'kpia'</span>]) },
+	      <span class="hljs-string">"Bounce"</span>: <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">row</span>) </span>{ <span class="hljs-keyword">return</span> row[<span class="hljs-string">'Page'</span>] * <span class="hljs-number">2</span> }}</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-4">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-4">&#182;</a>
+              </div>
+              <h3 id="preprocess">Preprocess</h3>
+<p>Helper functions for preprocessing CQL queries</p>
+
+            </div>
+            
+        </li>
+        
+        
+        <li id="section-5">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-5">&#182;</a>
+              </div>
+              <p><code>getFnDef(f)</code><br />Returns a function definition string</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">var</span> getFnDef = <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">f</span>)
+</span>{ <span class="hljs-keyword">if</span> (f != <span class="hljs-literal">undefined</span>)
+  { <span class="hljs-keyword">return</span> f.toString()}
+  <span class="hljs-keyword">else</span> 
+  { <span class="hljs-keyword">return</span> <span class="hljs-string">""</span>}}</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-6">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-6">&#182;</a>
+              </div>
+              <p><code>reRowCol</code><br />Regex for matching a row[‘Value’] or col[“Value”]
+var reRowCol = /(row|col)[(\’|\”)(\w+|\w+:\w+)(\’|\”)]/g;</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">var</span> reRowCol = <span class="hljs-regexp">/(row|col|def)\[(\'|\")([^\[\]]+)(\'|\")\]/g</span>;</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-7">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-7">&#182;</a>
+              </div>
+              <p><code>reObjVoK</code><br />Regex for matching a Value of a Keyword: [‘Value’]
+var reObjVoK = /.*?[.(\w+|\w+:\w+).]/;</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">var</span> reObjVoK = <span class="hljs-regexp">/.*?\[.([^\[\]]+).\]/</span>;</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-8">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-8">&#182;</a>
+              </div>
+              <p><code>reGetKey(s)</code><br />Returns the Value of a Keyword string: [‘Value’]</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">var</span> reGetKey = <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">s</span>)
+</span>{ <span class="hljs-keyword">return</span> s.replace(reObjVoK,<span class="hljs-string">"$1"</span>)}</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-9">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-9">&#182;</a>
+              </div>
+              <p><code>reHasCol(s)</code><br />Returns the input string if it contains ‘col’</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">var</span> reHasCol = <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">s</span>)
+</span>{ <span class="hljs-keyword">if</span> (s.match(<span class="hljs-regexp">/col/</span>))
+  { <span class="hljs-keyword">return</span> s}}</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-10">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-10">&#182;</a>
+              </div>
+              <p><code>reHasDef(s)</code><br />Returns the input string if it contains ‘def’</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">var</span> reHasDef = <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">s</span>)
+</span>{ <span class="hljs-keyword">if</span> (s.match(<span class="hljs-regexp">/def/</span>))
+  { <span class="hljs-keyword">return</span> s}}</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-11">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-11">&#182;</a>
+              </div>
+              <p><code>reHasRow(s)</code><br />Returns the input string if it contains ‘row’</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">var</span> reHasRow = <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">s</span>)
+</span>{ <span class="hljs-keyword">if</span> (s.match(<span class="hljs-regexp">/row/</span>))
+  { <span class="hljs-keyword">return</span> s}}</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-12">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-12">&#182;</a>
+              </div>
+              <p><code>getFnCols(f)</code><br />Returns <code>col</code> matches from a function definition</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">var</span> getFnCols = <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">f</span>)
+</span>{ <span class="hljs-keyword">return</span> uniq(map(reGetKey,getFnDef(f).match(reRowCol).filter(reHasCol)))}</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-13">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-13">&#182;</a>
+              </div>
+              <p><code>getFnDefs(f)</code><br />Returns <code>def</code> matches from a function definition</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">var</span> getFnDefs = <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">f</span>)
+</span>{ <span class="hljs-keyword">return</span> uniq(map(reGetKey,getFnDef(f).match(reRowCol).filter(reHasDef)))}</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-14">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-14">&#182;</a>
+              </div>
+              <p><code>getFnRows(f)</code><br />Returns <code>row</code> matches from a function definition</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">var</span> getFnRows = <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">f</span>)
+</span>{ <span class="hljs-keyword">return</span> uniq(map(reGetKey,getFnDef(f).match(reRowCol).filter(reHasRow)))}</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-15">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-15">&#182;</a>
+              </div>
+              <p><code>getFnRowsCols(f)</code><br />Returns <code>row</code> and <code>col</code> matches from a function definition</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">var</span> getFnRowsCols = <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">f</span>)
+</span>{ <span class="hljs-keyword">return</span> uniq(map(reGetKey,getFnDef(f).match(reRowCol)))}</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-16">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-16">&#182;</a>
+              </div>
+              <p><code>dependentCols(obj)</code><br />Returns object dependencies for object <code>fun:</code>
+Each <code>key</code> depends on its <code>values</code></p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">var</span> dependentCols = <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">obj</span>)
+</span>{ <span class="hljs-keyword">var</span> res = {};
+  map(<span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">k</span>)
+      </span>{ res[k] = getFnRowsCols(obj[k])},
+     keys(obj))
+  <span class="hljs-keyword">return</span> res}</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-17">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-17">&#182;</a>
+              </div>
+              <p><code>columnDependecies(obj)</code><br />Returns an array of dependency key pairs form dependentCols object</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">var</span> columnDependecies = <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">obj</span>)
+</span>{ <span class="hljs-keyword">var</span> res = [];
+  map(<span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">k</span>)
+      </span>{ obj[k].map(<span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">v</span>)
+		   </span>{ res.push([k,v])})},
+     keys(obj));
+  <span class="hljs-keyword">return</span> res}</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-18">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-18">&#182;</a>
+              </div>
+              <p><code>columnProcessingOrder(obj)</code><br />Returns the column processing order for object <code>fun:</code></p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">var</span> columnProcessingOrder = comp(
+    <span class="hljs-string">"-&gt;"</span>,
+    dependentCols,
+    columnDependecies,
+    tsort);</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-19">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-19">&#182;</a>
+              </div>
+              <h2 id="gooh">Gooh</h2>
+<p>Basic helper functions for Google Apps Script</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>
+<span class="hljs-keyword">var</span> gooh = {</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-20">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-20">&#182;</a>
+              </div>
+              <h3 id="analytics">Analytics</h3>
+
+            </div>
+            
+        </li>
+        
+        
+        <li id="section-21">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-21">&#182;</a>
+              </div>
+              <p><code>gooh.getGaColNames(obj)</code><br /> Returns an array of the column names of a GA result object <code>obj</code></p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    getGaColNames: <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">obj</span>)
+    </span>{ <span class="hljs-keyword">return</span> map(comp(<span class="hljs-string">"-&gt;"</span>, [getv, <span class="hljs-string">"name"</span>]),
+		 obj[<span class="hljs-string">'columnHeaders'</span>])},</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-22">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-22">&#182;</a>
+              </div>
+              <p><code>gooh.getGaColType(obj)</code><br /> Returns an array of the column types of a GA result object <code>obj</code> </p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    getGaColTypes: <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">obj</span>)
+    </span>{ <span class="hljs-keyword">return</span> map(comp(<span class="hljs-string">"-&gt;"</span>, [getv, <span class="hljs-string">"columnType"</span>]),
+		 obj[<span class="hljs-string">'columnHeaders'</span>])},</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-23">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-23">&#182;</a>
+              </div>
+              <p><code>gooh.getGaColDataTypes(obj)</code><br /> Returns an array of the column data types of a GA result object <code>obj</code> </p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    getGaColDataTypes: <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">obj</span>)
+    </span>{ <span class="hljs-keyword">return</span> map(comp(<span class="hljs-string">"-&gt;"</span>, [getv, <span class="hljs-string">"dataType"</span>]),
+		 obj[<span class="hljs-string">'columnHeaders'</span>])},</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-24">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-24">&#182;</a>
+              </div>
+              <p><code>gooh.getGaRows(obj)</code><br /> Returns the rows matrix of a GA result object <code>obj</code> </p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    getGaRows: <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">obj</span>)
+    </span>{ <span class="hljs-keyword">return</span> obj[<span class="hljs-string">'rows'</span>]},</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-25">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-25">&#182;</a>
+              </div>
+              <p><code>gooh.getGaTotals(obj)</code><br /> Returns the totals object of a GA result object <code>obj</code> </p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    getGaTotals: <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">obj</span>)
+    </span>{ <span class="hljs-keyword">return</span> obj[<span class="hljs-string">'totalsForAllResults'</span>]},</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-26">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-26">&#182;</a>
+              </div>
+              <p><code>gooh.gaTemplate(cq)</code><br />Returns a Google Analytics query object from a <code>cq</code> definition that can be applied to a get function
+Reference: <a href="https://developers.google.com/apps-script/advanced/analytics">gas</a>
+<a href="https://developers.google.com/analytics/devguides/reporting/core/v3/reference">gav3</a></p>
+<blockquote>
+<p>&gt; var cq = {pid: “12345678”, met: “ga:visits”, beg: “2013-03-21”, end: “2013-04-17”, dim: “date”};
+&gt; gaTemplate(cq)
+{“pid”:”ga:12345678”,”beg”:”2013-03-21”,”end”:”2013-04-17”,”met”:”ga:visits”,”rest”:{“dimensions”:”date”}}</p>
+</blockquote>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    gaTemplate: <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">cq</span>) 
+    </span>{ <span class="hljs-keyword">var</span> obj = 
+      { <span class="hljs-string">"dimensions"</span>: cq.dim,
+	<span class="hljs-string">'filters'</span>: cq.fil,
+	<span class="hljs-string">'max-result'</span>: cq.max,
+	<span class="hljs-string">'samplingLevel'</span>: cq.smp, <span class="hljs-comment">// DEFAULT, FASTER, HIGHER_PRECISION</span>
+	<span class="hljs-string">'segment'</span>: cq.seg,
+      	<span class="hljs-string">'sort'</span>: cq.ord,
+	<span class="hljs-string">'start-index'</span>: cq.sti,
+	<span class="hljs-string">'output'</span>: cq.out 	<span class="hljs-comment">// json, dataTable</span>
+      };
+      <span class="hljs-keyword">return</span> {pid: <span class="hljs-string">'ga:'</span>+cq.pid,
+	      beg: cq.beg,
+	      end: cq.end,
+	      met: cq.met,
+	      rest: filterObject(obj,is.notUndefined)}},</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-27">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-27">&#182;</a>
+              </div>
+              <p><code>gooh.gaGet(q)</code><br />Returns the result of GA query <code>q</code></p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    gaGet: <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">q</span>)
+    </span>{ <span class="hljs-keyword">return</span> Analytics.Data.Ga.get(q.pid,
+				   q.beg,
+				   q.end,
+				   q.met,
+				   q.rest)},</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-28">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-28">&#182;</a>
+              </div>
+              <p><code>gooh.mcfGet(q)</code><br />Returns the result of Mcf GA query <code>q</code></p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    mcfGet: <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">q</span>) 
+    </span>{ <span class="hljs-keyword">return</span> Analytics.Data.Mcf.get(q.pid,
+				    q.beg,
+				    q.end,
+				    q.met,
+				    q.rest)},</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-29">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-29">&#182;</a>
+              </div>
+              <p><code>gooh.rtGet(q)</code><br />Returns the result of Realtime GA query <code>q</code></p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    rtGet: <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">q</span>)
+    </span>{ <span class="hljs-keyword">return</span> Analytics.Data.Realtime.get(q.pid,
+					 q.beg,
+					 q.end,
+					 q.met,
+					 q.rest)},</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-30">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-30">&#182;</a>
+              </div>
+              <p><code>gooh.accountsGet(q)</code><br />Returns the GA account list</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    accountsGet: <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>)
+    </span>{ <span class="hljs-keyword">return</span> Analytics.Management.Accounts.list()},</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-31">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-31">&#182;</a>
+              </div>
+              <p><code>gooh.webPropertyGet(accountId, webPropertyID</code><br />Returns a property</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    webPropertyGet: <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">accountId, webPropertyID</span>)
+    </span>{ <span class="hljs-keyword">return</span> Analytics.Management.Webproperties.get(accountId,
+						    webPropertyID)},</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-32">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-32">&#182;</a>
+              </div>
+              <h3 id="spreadsheet">Spreadsheet</h3>
+
+            </div>
+            
+        </li>
+        
+        
+        <li id="section-33">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-33">&#182;</a>
+              </div>
+              <p><code>gooh.reateSheet(s)</code><br />Returns a new sheet object</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    createSheet: <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">s</span>) 
+    </span>{ <span class="hljs-keyword">return</span> SpreadsheetApp.create(s)},</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-34">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-34">&#182;</a>
+              </div>
+              <p><code>gooh.moveSheetToFolder(sheet, fid)</code><br />Moves a file to a Drive folder</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    moveSheetToFolder: <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">sheet, fid</span>)
+    </span>{ <span class="hljs-keyword">var</span> oldfile = DriveApp.getFileById(sheet.getId());
+      DriveApp.getFolderById(fid).addFile(oldfile);
+      DriveApp.getRootFolder().removeFile(oldfile)}
+    
+};</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-35">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-35">&#182;</a>
+              </div>
+              <h2 id="goog">Goog</h2>
+<p>Composed high level functions for Google Apps Script</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">var</span> goog = {</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-36">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-36">&#182;</a>
+              </div>
+              <h3 id="analytics">Analytics</h3>
+
+            </div>
+            
+        </li>
+        
+        
+        <li id="section-37">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-37">&#182;</a>
+              </div>
+              <p><code>goog.runGaGet(cq)</code><br />Runs a GA query and returns results in an object. </p>
+<blockquote>
+<p>&gt; var cq = {pid: ‘12345678’, beg: ‘2015-10-22’, end: ‘2015-10-29’, met: ‘ga:sessions,ga:users’, dim: ‘ga:date’};
+&gt; var res = goog.runGaGet(cq);
+&gt; var sheet = gooh.createSheet(“GA query 1”);
+&gt; gaExportToSheet(sheet.getActiveSheet(),res);
+&gt; Logger.log(“Report is available at “ + sheet.getUrl());
+Report is available at ~a link~</p>
+</blockquote>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    runGaGet: comp(
+	<span class="hljs-string">"-&gt;"</span>, 
+	gooh.gaTemplate,
+	gooh.gaGet),</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-38">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-38">&#182;</a>
+              </div>
+              <p><code>goog.runMcfGet(cq)</code><br />Runs an Mcf GA query and returns results in an object. </p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    runMcfGet: comp(
+	<span class="hljs-string">"-&gt;"</span>,
+	gooh.gaTemplate,
+	gooh.mcfGet),</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-39">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-39">&#182;</a>
+              </div>
+              <p><code>goog.runRtGet(cq)</code><br />Runs a Real-Time GA query and returns results in an object. </p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    runRtGet: comp(
+	<span class="hljs-string">"-&gt;"</span>,
+	gooh.gaTemplate,
+	gooh.mcfGet),</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-40">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-40">&#182;</a>
+              </div>
+              <h3 id="spreadsheet">Spreadsheet</h3>
+
+            </div>
+            
+        </li>
+        
+        
+        <li id="section-41">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-41">&#182;</a>
+              </div>
+              <p><code>goog.gaExportToSheet(sheet,obj)</code><br />Exports a GA query results <code>obj</code> to a <code>sheet</code> object.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    gaExportToSheet: <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">sheet,obj</span>)
+    </span>{ sheet.appendRow(gooh.getGaColNames(obj));
+      map(sheet.appendRow,
+	  gooh.getGaRows(obj))},</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-42">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-42">&#182;</a>
+              </div>
+              <p><code>goog.exportToSheet(sheet,oar)</code><br />Exports dataset <code>oar</code> to a <code>sheet</code> object.</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    objectToSheet: <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">sheet,oar</span>)
+    </span>{ <span class="hljs-keyword">var</span> colnames = colNames(oar);
+      sheet.appendRow(colnames);
+      map(sheet.appendRow,
+	  oar2mtx(selectColumn(colnames, oar)))},</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-43">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-43">&#182;</a>
+              </div>
+              <p><code>goog.gaToObject(obj)``&lt;br /&gt;Returns a dataset object from GA query result object</code>obj`</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    gaToObject: <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">obj</span>)
+    </span>{ <span class="hljs-keyword">return</span> mtx2oar(cons(gooh.getGaColNames(obj),
+				 gooh.getGaRows(obj)))}
+
+}</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-44">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-44">&#182;</a>
+              </div>
+              <h2 id="cql">CQL</h2>
+<p>Declarative style query and postprocess functions</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">var</span> cqlTypes = 
+    {<span class="hljs-string">"ga"</span>: goog.runGaGet,
+     <span class="hljs-string">"mcf"</span>: goog.runMcfGet,
+     <span class="hljs-string">"rt"</span>: goog.runRtGet};</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-45">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-45">&#182;</a>
+              </div>
+              <p><code>funs</code><br />Temporal demo data</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">var</span> cql = {typ: <span class="hljs-string">"ga"</span>,
+	   pid: <span class="hljs-string">'12345678'</span>,
+	   beg: <span class="hljs-string">'2015-10-22'</span>,
+	   end: <span class="hljs-string">'2015-10-29'</span>,
+	   met: <span class="hljs-string">' ga:sessions , ga:users '</span>,
+	   dim: <span class="hljs-string">' ga:date '</span>,
+	   def: { <span class="hljs-string">"sumcol"</span>: <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">col</span>) </span>{ <span class="hljs-keyword">return</span> sum(col[<span class="hljs-string">"ga:sessions"</span>]) + sum(col[<span class="hljs-string">'ga:users'</span>])},
+		  <span class="hljs-string">"sumco2"</span>: <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">col</span>) </span>{ <span class="hljs-keyword">return</span> sum(col[<span class="hljs-string">"ga:users"</span>])}
+		},
+	   fun: { <span class="hljs-string">"3rd"</span>: <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">row</span>) </span>{<span class="hljs-keyword">return</span> row[<span class="hljs-string">"Bounce"</span>] * <span class="hljs-number">3</span> + <span class="hljs-number">1</span>},     
+		  <span class="hljs-string">"Page"</span>: <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">def, row</span>)</span>{ <span class="hljs-keyword">return</span> row[<span class="hljs-string">"ga:sessions"</span>] * <span class="hljs-number">2</span> + row[<span class="hljs-string">"ga:users"</span>] + def[<span class="hljs-string">'sumcol'</span>] },
+		  <span class="hljs-string">"Bounce"</span>: <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">row</span>) </span>{ <span class="hljs-keyword">return</span> row[<span class="hljs-string">'Page'</span>] * <span class="hljs-number">2</span> + row[<span class="hljs-string">"ga:sessions"</span>]}
+		}
+	  };
+
+<span class="hljs-keyword">var</span> gaResp = csv2oar(<span class="hljs-string">","</span>,<span class="hljs-string">"ga:date,ga:sessions,ga:users\n20151022,24102,21212\n20151023,29564,25656\n20151024,14238,12859\n20151025,17557,15875\n20151026,24728,21523\n20151027,28305,24619\n20151028,24867,21555\n20151029,13621,12290"</span>);
+<span class="hljs-keyword">var</span> processCql = <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">cq</span>)
+</span>{ <span class="hljs-comment">// per: , fun: , col:</span>
+    <span class="hljs-keyword">var</span> basecols = merge(cq.met.split(<span class="hljs-string">","</span>), cq.dim.split(<span class="hljs-string">","</span>));
+    basecols = map(strim, basecols);
+    <span class="hljs-keyword">var</span> fundef = mergeObjects(cql.def, cql.fun);
+    <span class="hljs-keyword">var</span> funcols = difference(columnProcessingOrder(fundef), basecols);</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-46">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-46">&#182;</a>
+              </div>
+              <p>console.log(“basecols “+ JSON.stringify(basecols));
+console.log(“fundef “+ JSON.stringify(fundef));
+console.log(“funcols “+ JSON.stringify(funcols));
+run base query based on typ:</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="hljs-keyword">var</span> gaResp1 = <span class="hljs-number">1</span>;</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-47">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-47">&#182;</a>
+              </div>
+              <p>init temp calc storage</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="hljs-keyword">var</span> col = {}; 
+    <span class="hljs-keyword">var</span> def = {};
+    <span class="hljs-keyword">var</span> funli = funcols.length;</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-48">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-48">&#182;</a>
+              </div>
+              <p>for each fun: definition
+def: caches col[] and def[] based values
+fun: contains only row[] or def[], no cols</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="hljs-keyword">for</span> (<span class="hljs-keyword">var</span> i=<span class="hljs-number">0</span>; i&lt;funli; i++)
+    { <span class="hljs-comment">// next column function and type: fun: or def:</span>
+      <span class="hljs-keyword">var</span> nextColFn, nt;
+      <span class="hljs-keyword">if</span> (is.notUndefined(cq.fun[funcols[i]]))
+      { nextColFn = cq.fun[funcols[i]]; nt = <span class="hljs-string">'fun'</span>}
+      <span class="hljs-keyword">else</span>
+      { nextColFn = cq.def[funcols[i]]; nt = <span class="hljs-string">'def'</span>}
+
+      <span class="hljs-keyword">var</span> fnCols; 
+      <span class="hljs-keyword">if</span> (nt == <span class="hljs-string">'fun'</span>)
+      { fnCols = getFnDefs(nextColFn)}
+      <span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (nt == <span class="hljs-string">'def'</span>)
+      { fnCols = getFnCols(nextColFn)}
+      <span class="hljs-built_in">console</span>.log(<span class="hljs-string">"fnCols nt "</span> + nt + <span class="hljs-string">" | "</span> + funcols[i] + <span class="hljs-string">" | "</span> + nextColFn + <span class="hljs-string">" /// "</span> + <span class="hljs-built_in">JSON</span>.stringify(fnCols));
+      
+	<span class="hljs-keyword">var</span> fnColsli = fnCols.length;</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-49">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-49">&#182;</a>
+              </div>
+              <p>calc cols in def:</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>      <span class="hljs-keyword">if</span> (fnColsli &gt; <span class="hljs-number">0</span> &amp;&amp; nt == <span class="hljs-string">'def'</span>) <span class="hljs-comment">// if there is col in fun def</span>
+      { <span class="hljs-keyword">for</span> (<span class="hljs-keyword">var</span> j=<span class="hljs-number">0</span>; j&lt;fnColsli; j++)
+	{ <span class="hljs-keyword">if</span> (col[fnCols[j]] == <span class="hljs-literal">undefined</span>) <span class="hljs-comment">// if this col is not yet cached</span>
+	  { col[fnCols[j]] = pluck(fnCols[j],gaResp)}}}</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-50">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-50">&#182;</a>
+              </div>
+              <p>store def function result</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>      <span class="hljs-keyword">if</span> (nt == <span class="hljs-string">'def'</span>)
+      { def[funcols[i]] = nextColFn(col) }</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-51">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-51">&#182;</a>
+              </div>
+              <p>console.log(“itt def “ + JSON.stringify(def));</p>
+
+            </div>
+            
+        </li>
+        
+        
+        <li id="section-52">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-52">&#182;</a>
+              </div>
+              <p>fun process</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>      <span class="hljs-keyword">if</span> (nt == <span class="hljs-string">'fun'</span>)
+      { <span class="hljs-keyword">var</span> resli = gaResp.length;
+	<span class="hljs-keyword">var</span> res = [];
+	<span class="hljs-keyword">var</span> needDef = <span class="hljs-literal">true</span>;
+	<span class="hljs-keyword">if</span> (fnCols.length == <span class="hljs-number">0</span>)
+	{ needDef = <span class="hljs-literal">false</span>}</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-53">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-53">&#182;</a>
+              </div>
+              <p>proces fun on rows</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>	<span class="hljs-keyword">for</span> (<span class="hljs-keyword">var</span> j=<span class="hljs-number">0</span>; j&lt;resli; j++)
+	{ <span class="hljs-keyword">var</span> nv;
+	  <span class="hljs-keyword">if</span> (needDef) { nv = nextColFn(def, gaResp[j])}
+	  <span class="hljs-keyword">else</span> { nv = nextColFn(gaResp[j])}
+	  res.push(nv)}</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-54">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-54">&#182;</a>
+              </div>
+              <p>merge res to gaResp</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>	gaResp = addColumn(funcols[i],res, gaResp);</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-55">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-55">&#182;</a>
+              </div>
+              <p>console.log(“fun res “ + JSON.stringify(res));</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>      }</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-56">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-56">&#182;</a>
+              </div>
+              <pre><code> <span class="hljs-built_in">console</span>.log(<span class="hljs-built_in">JSON</span>.stringify(db));
+</code></pre>
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    }
+    <span class="hljs-keyword">return</span> funcols}</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-57">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-57">&#182;</a>
+              </div>
+              <p>///////</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">var</span> timer = <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">name</span>) </span>{
+    <span class="hljs-keyword">var</span> start = <span class="hljs-keyword">new</span> <span class="hljs-built_in">Date</span>();
+    <span class="hljs-keyword">return</span> {
+        stop: <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>) </span>{
+            <span class="hljs-keyword">var</span> end  = <span class="hljs-keyword">new</span> <span class="hljs-built_in">Date</span>();
+            <span class="hljs-keyword">var</span> time = end.getTime() - start.getTime();
+            <span class="hljs-built_in">console</span>.log(<span class="hljs-string">'Timer:'</span>, name, <span class="hljs-string">'finished in'</span>, time, <span class="hljs-string">'ms'</span>);
+        }
+    }
+};
+
+<span class="hljs-comment">/*
+
+Mult * generalise
+
+oar2csv, comp as local fn symbol
+*/</span></pre></div></div>
+            
+        </li>
+        
+    </ul>
+  </div>
+</body>
+</html>

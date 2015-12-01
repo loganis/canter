@@ -1,0 +1,2645 @@
+<!DOCTYPE html>
+
+<html>
+<head>
+  <title>Canter.js</title>
+  <meta http-equiv="content-type" content="text/html; charset=UTF-8">
+  <meta name="viewport" content="width=device-width, target-densitydpi=160dpi, initial-scale=1.0; maximum-scale=1.0; user-scalable=0;">
+  <link rel="stylesheet" media="all" href="docco.css" />
+</head>
+<body>
+  <div id="container">
+    <div id="background"></div>
+    
+      <ul id="jump_to">
+        <li>
+          <a class="large" href="javascript:void(0);">Jump To &hellip;</a>
+          <a class="small" href="javascript:void(0);">+</a>
+          <div id="jump_wrapper">
+          <div id="jump_page_wrapper">
+            <div id="jump_page">
+              
+                
+                <a class="source" href="canter-ql.html">
+                  canter-ql.js
+                </a>
+              
+                
+                <a class="source" href="canter.html">
+                  canter.js
+                </a>
+              
+            </div>
+          </div>
+        </li>
+      </ul>
+    
+    <ul class="sections">
+        
+        
+        
+        <li id="section-1">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-1">&#182;</a>
+              </div>
+              <h1 id="canter-js">Canter.js</h1>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>
+<span class="hljs-comment">/*
+    Canter.js Copyright 2015 iWebMa Ltd., Arnold Matyasi. 
+    Canter.js may be freely distributed under the MIT license.
+    Commercial and non-commercial use are permitted in compliance with the License.
+ */</span></pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-2">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-2">&#182;</a>
+              </div>
+              <p>Current version</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">const</span> VERSION = <span class="hljs-string">"0.1.68"</span>;</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-3">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-3">&#182;</a>
+              </div>
+              <p><img src="canter.png" alt="Canter logo"></p>
+
+            </div>
+            
+        </li>
+        
+        
+        <li id="section-4">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-4">&#182;</a>
+              </div>
+              <p>Canter.js is a small dataset query processing helper library in JavaScript offering
+Declarative and Functional programming style composable functions.</p>
+
+            </div>
+            
+        </li>
+        
+        
+        <li id="section-5">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-5">&#182;</a>
+              </div>
+              <h2 id="features">Features</h2>
+<ul>
+<li>Transducers like functional <a href="#composition">composition</a></li>
+<li><a href="http://docs.loganis.com/canter/test">Tests</a> and <a href="http://docs.loganis.com/canter/test/benchmark.html">Benchmarks</a></li>
+<li>Declarative style <a href="#queryobj">query</a></li>
+<li>very small (canter-min.js.gz ~3KB)</li>
+<li>no dependencies</li>
+<li>does not extend built-in objects</li>
+<li><a href="#dataset">dataset</a> functions</li>
+<li>basic <a href="#statistical">statistical</a> and <a href="#set-theory">set-theory</a> and <a href="#sort">sort</a> functions</li>
+<li>should run on Cloud (Google Apps Script), IoT devices (Edison, RPi), Browser, Server (Node)</li>
+</ul>
+
+            </div>
+            
+        </li>
+        
+        
+        <li id="section-6">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-6">&#182;</a>
+              </div>
+              <h2 id="table-of-contents">Table of Contents</h2>
+<ul>
+<li><a href="#abbreviations">Abbreviations</a></li>
+<li><a href="#terminology">Terminology</a></li>
+<li><a href="#operators">Operators</a></li>
+<li><a href="#predicates">Predicates</a></li>
+<li><a href="#composition">Composition</a></li>
+<li><a href="#array">Array</a></li>
+<li><a href="#string">String</a></li>
+<li><a href="#date">Date</a></li>
+<li><a href="#object">Object</a></li>
+<li><a href="#dataset">Dataset</a><ul>
+<li><a href="#object-array">Object Array</a></li>
+<li><a href="#matrix">Matrix</a></li>
+<li><a href="#import-export">Import-Export</a></li>
+</ul>
+</li>
+<li><a href="#statistical">Statistical</a></li>
+<li><a href="#set-theory">Set therory</a></li>
+<li><a href="#sort">Sort</a></li>
+</ul>
+
+            </div>
+            
+        </li>
+        
+        
+        <li id="section-7">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-7">&#182;</a>
+              </div>
+              <h3 id="abbreviations">Abbreviations</h3>
+
+            </div>
+            
+        </li>
+        
+        
+        <li id="section-8">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-8">&#182;</a>
+              </div>
+              <p><code>ar</code>, <code>arb</code> an <strong>array</strong>: <code>[]</code><br />
+<code>args</code> arguments of a function in an array<br />
+<code>col</code> an object containing all columns and rows data: <code>[{}]</code><br />
+<code>col1</code>, <code>col2</code> a column name string : <code>&quot;&quot;</code><br />
+<code>cols</code> column names in an array: <code>[&quot;&quot;,&quot;&quot;]</code><br />
+<code>cq</code> canter query object: <code>{}</code><br />
+<code>ct</code> composition type string <code>&quot;&quot;</code><br />
+<code>f</code> a function<br />
+<code>fns</code> functions in an array: <code>[f,f,f]</code><br />
+<code>i</code> an index number: <code>0</code><br />
+<code>k</code> a key of an object: <code>{k: v}</code><br />
+<code>kar</code> an array of keys of an obj: <code>[&quot;k&quot;,&quot;k&quot;,&quot;k&quot;]</code><br />
+<code>*li</code>, <code>arli</code>, <code>oarli</code> a number, the index of the last item of an array is (li - 1)<br />
+<code>mtx</code> a <strong>matrix</strong> or array of arrays: <code>[[],[],[]]</code><br />
+<code>n</code> a <strong>number</strong>: <code>0</code><br />
+<code>oar</code>, <code>oarb</code> an <strong>object array</strong>: <code>[{}]</code><br />
+<code>obj</code> a js <strong>object</strong>: <code>{}</code><br />
+<code>q</code> query object: <code>{}</code><br />
+<code>res</code> result variable, array <code>[]</code> or object <code>{}</code><br />
+<code>row</code> an object containing all data of a row: <code>{}</code><br />
+<code>row1</code>, <code>row2</code> a row in an <code>oar</code><br />
+<code>rows</code> rows of an <code>oar</code><br />
+<code>s</code> a <strong>string</strong>: <code>&quot;a&quot;</code><br />
+<code>sep</code> a separator char: <code>&quot;,&quot;</code><br />
+<code>v</code> value of a <code>k</code> in an <code>obj</code>: <code>{k: v}</code><br />
+<code>x</code> a number: <code>0</code><br />
+<code>y</code> a number: <code>0</code><br /></p>
+
+            </div>
+            
+        </li>
+        
+        
+        <li id="section-9">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-9">&#182;</a>
+              </div>
+              <h2 id="terminology">Terminology</h2>
+
+            </div>
+            
+        </li>
+        
+        
+        <li id="section-10">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-10">&#182;</a>
+              </div>
+              <h3 id="dataset-formats">Dataset formats</h3>
+<p>Dataset is a collection of metrical or dimensional values in the following formats:</p>
+<ul>
+<li><code>oar</code> - Object Array or JSON, [{},{}]</li>
+<li><code>mtx</code> - Matrix Array, [[],[]]</li>
+<li><code>csv</code> - String, Comma Separated Values</li>
+</ul>
+
+            </div>
+            
+        </li>
+        
+        
+        <li id="section-11">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-11">&#182;</a>
+              </div>
+              <h4 id="oar">OAR</h4>
+<p>A (JSON) object is an array of objects containing key-value pairs</p>
+<blockquote>
+<p>[{col1:v11,col2:v12,col3:v13},
+ {col1:v21,col2:v22,col3:v23}]</p>
+</blockquote>
+<h4 id="mtx">MTX</h4>
+<p>A Matrix is an array of arrays containing ordered values. 
+First element is the column name array.
+Rest of the elements are value arrays</p>
+<blockquote>
+<p>[[col1,col2,col3]
+ [v11,v12,v13]
+ [v21,v22,v23]]</p>
+</blockquote>
+<h4 id="csv">CSV</h4>
+<p>CSV is string where each line is terminated by a newline char.
+First line is the column header.</p>
+<blockquote>
+<p>col1,col2,col3
+v11,v12,v13
+v21,v22,v23</p>
+</blockquote>
+
+            </div>
+            
+        </li>
+        
+        
+        <li id="section-12">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-12">&#182;</a>
+              </div>
+              <h2 id="operators">Operators</h2>
+<p>Basic operator helpers</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">var</span> ops = {</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-13">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-13">&#182;</a>
+              </div>
+              <h4 id="ops-or">ops.or</h4>
+<p><code>ops.or(x,y)</code><br />Returns true if any of <code>x</code> or <code>y</code> is true</p>
+<blockquote>
+<p>&gt; ops.or(true,false)
+true
+&gt; [true,false,true].reduce(ops.or)
+true</p>
+</blockquote>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    or:  <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">x, y</span>)
+    </span>{ <span class="hljs-keyword">return</span> (x || y)},</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-14">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-14">&#182;</a>
+              </div>
+              <h4 id="ops-and">ops.and</h4>
+<p><code>ops.and(x,y)</code><br />Returns true if both <code>x</code> and <code>y</code> are true</p>
+<blockquote>
+<p>&gt; ops.and(true,false)
+false
+&gt; [true,false,true].reduce(ops.and)
+false</p>
+</blockquote>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    and: <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">x, y</span>)
+    </span>{ <span class="hljs-keyword">return</span> (x &amp;&amp; y)},</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-15">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-15">&#182;</a>
+              </div>
+              <h4 id="ops-eq">ops.eq</h4>
+<p><code>ops.eq(x,y)</code><br />Returns true if <code>x</code> is equal to <code>y</code></p>
+<blockquote>
+<p>&gt; ops.eq(true,true)
+true</p>
+</blockquote>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    eq:  <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">x, y</span>)
+    </span>{ <span class="hljs-keyword">return</span> (x == y)},</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-16">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-16">&#182;</a>
+              </div>
+              <h4 id="ops-neq">ops.neq</h4>
+<p><code>ops.neq(x,y)</code><br />Returns true if <code>x</code> is not equal to <code>y</code></p>
+<blockquote>
+<p>&gt; ops.neq(true, true)
+false</p>
+</blockquote>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    neq: <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">x, y</span>)
+    </span>{ <span class="hljs-keyword">return</span> (x != y)},</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-17">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-17">&#182;</a>
+              </div>
+              <h4 id="ops-lt">ops.lt</h4>
+<p><code>ops.lt(x,y)</code><br />Returns true if <code>x</code> if less than <code>y</code></p>
+<blockquote>
+<p>&gt; ops.lt(1, 2)
+true</p>
+</blockquote>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    lt: <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">x, y</span>)
+    </span>{ <span class="hljs-keyword">return</span> (x &lt; y)},</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-18">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-18">&#182;</a>
+              </div>
+              <h4 id="ops-lte">ops.lte</h4>
+<p><code>ops.lte(x,y)</code><br />Returns true of <code>x</code> is less than or equal to <code>y</code></p>
+<blockquote>
+<p>&gt; ops.lte(1, 2)
+true</p>
+</blockquote>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    lte: <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">x, y</span>)
+    </span>{ <span class="hljs-keyword">return</span> (x &lt;= y)},</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-19">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-19">&#182;</a>
+              </div>
+              <h4 id="ops-gt">ops.gt</h4>
+<p><code>ops.gt(x,y)</code><br />Returns true if <code>x</code> is greater than <code>y</code></p>
+<blockquote>
+<p>&gt; ops.gt(1, 2)
+false</p>
+</blockquote>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    gt: <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">x, y</span>)
+    </span>{ <span class="hljs-keyword">return</span> (x &gt; y)},</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-20">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-20">&#182;</a>
+              </div>
+              <h4 id="ops-gte">ops.gte</h4>
+<p><code>ops.gte(x,y)</code><br />Returns true if <code>x</code> is greater than or equal to <code>y</code></p>
+<blockquote>
+<p>&gt; ops.gte(1, 2)
+false</p>
+</blockquote>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    gte: <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">x, y</span>)
+    </span>{ <span class="hljs-keyword">return</span> (x &gt;= y)},</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-21">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-21">&#182;</a>
+              </div>
+              <h4 id="ops-in">ops.in</h4>
+<p><code>ops.in(x,ar)</code><br />Returns true if <code>ar</code> array contains <code>x</code></p>
+<blockquote>
+<p>&gt; ops.in(1, [1, 2, 3])
+true</p>
+</blockquote>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="hljs-keyword">in</span>: <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">x, ar</span>)
+    </span>{ <span class="hljs-keyword">return</span> (ar.some(<span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">c</span>)
+		      </span>{ <span class="hljs-keyword">return</span> (c == x) }))},</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-22">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-22">&#182;</a>
+              </div>
+              <h4 id="ops-nin">ops.nin</h4>
+<p><code>ops.nin(x,ar)</code><br />Returns true if <code>ar</code> array does not contain <code>x</code></p>
+<blockquote>
+<p>&gt; ops.nin(1, [2, 3, 4])
+true</p>
+</blockquote>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    nin: <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">x, ar</span>)
+    </span>{ <span class="hljs-keyword">return</span> (ar.every(<span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">c</span>)
+		       </span>{ <span class="hljs-keyword">return</span> (c != x) }))},</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-23">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-23">&#182;</a>
+              </div>
+              <h4 id="ops-plus">ops.plus</h4>
+<p><code>ops.plus(x,y)</code><br />Returns the sum of <code>x</code> and <code>y</code></p>
+<blockquote>
+<p>&gt; ops.plus(1, 2)
+3
+&gt; [1, 2, 3].reduce(ops.plus)
+6</p>
+</blockquote>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    plus: <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">x, y</span>)
+    </span>{ <span class="hljs-keyword">return</span> <span class="hljs-number">1</span> * x  + <span class="hljs-number">1</span> * y},</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-24">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-24">&#182;</a>
+              </div>
+              <h4 id="ops-minus">ops.minus</h4>
+<p><code>ops.minus(x,y)</code><br />Returns the result of <code>x - y</code> calculation</p>
+<blockquote>
+<p>&gt; ops.minus(2, 1)
+1
+&gt; var myminus = comp(‘-&gt;’, [ops.minus, 10]);
+&gt; myminus(11)
+1
+&gt; var myminus2 = comp(‘-&gt;&gt;’, [ops.minus, 10]);
+&gt; myminus2(11)
+-1</p>
+</blockquote>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    minus: <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">x, y</span>)
+    </span>{ <span class="hljs-keyword">return</span> x - y},</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-25">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-25">&#182;</a>
+              </div>
+              <h4 id="ops-mult">ops.mult</h4>
+<p><code>ops.mult(x,y)</code><br />Returns the result of <code>x * y</code> calculation</p>
+<blockquote>
+<p>&gt; ops.mult(2, 3)
+6
+&gt; var mymult = comp(‘-&gt;’, [ops.mult, 2 * Math.PI]);
+&gt; mymult(1/Math.PI)
+2
+&gt; map(mymult, [1/Math.PI, 2, 3, 4])
+[2, 12.566370614359172, 18.84955592153876, 25.132741228718345]
+&gt; map(mymult,[1/Math.PI, 2, 3, 4]).reduce(ops.plus)
+58.548667764616276</p>
+</blockquote>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    mult: <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">x, y</span>)
+    </span>{ <span class="hljs-keyword">return</span> x * y},</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-26">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-26">&#182;</a>
+              </div>
+              <h4 id="ops-div">ops.div</h4>
+<p><code>ops.div(x,y)</code><br />Returns the result of <code>x / y</code> calculation</p>
+<blockquote>
+<p>&gt; ops.div(15, 3)
+5</p>
+</blockquote>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    div: <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">x, y</span>)
+    </span>{ <span class="hljs-keyword">return</span> x / y},</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-27">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-27">&#182;</a>
+              </div>
+              <h4 id="ops-inc">ops.inc</h4>
+<p><code>ops.inc(x)</code><br />Returns the result of <code>x + 1</code> calculation</p>
+<blockquote>
+<p>&gt; ops.inc(8)
+9
+&gt; map(ops.inc, [1, 2, 3, 4, 5])
+[2, 3, 4, 5, 6]</p>
+</blockquote>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    inc: <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">x</span>)
+    </span>{ <span class="hljs-keyword">return</span> <span class="hljs-number">1</span> * x + <span class="hljs-number">1</span>},</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-28">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-28">&#182;</a>
+              </div>
+              <h4 id="ops-dec">ops.dec</h4>
+<p><code>ops.dec(x)</code><br />Returns the result of <code>x - 1</code> calculation</p>
+<blockquote>
+<p>&gt; ops.dec(12)
+11<br>&gt; map(ops.dec, [2, 3, 4, 5, 6])
+[1, 2, 3, 4, 5]</p>
+</blockquote>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    dec: <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">x</span>)
+    </span>{ <span class="hljs-keyword">return</span> x - <span class="hljs-number">1</span>},</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-29">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-29">&#182;</a>
+              </div>
+              <h4 id="ops-square">ops.square</h4>
+<p><code>ops.square(x)</code><br />Returns the result of <code>x * x</code> calculation</p>
+<blockquote>
+<p>&gt; ops.square(8)
+64</p>
+</blockquote>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    square: <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">x</span>)
+    </span>{ <span class="hljs-keyword">return</span> x * x}
+   
+}</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-30">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-30">&#182;</a>
+              </div>
+              <h2 id="predicates">Predicates</h2>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">var</span> is = {</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-31">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-31">&#182;</a>
+              </div>
+              <h4 id="is-object">is.Object</h4>
+<p><code>is.Object(obj)</code><br />Returns true if <code>obj</code> is an object</p>
+<blockquote>
+<p>&gt; is.Object([1])
+true
+&gt; is.Object({a: 1})
+true</p>
+</blockquote>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="hljs-built_in">Object</span>: <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">obj</span>)
+    </span>{ <span class="hljs-keyword">if</span> (<span class="hljs-keyword">typeof</span> obj == <span class="hljs-string">'object'</span>)
+      { <span class="hljs-keyword">return</span> <span class="hljs-literal">true</span>}
+      <span class="hljs-keyword">else</span>
+      { <span class="hljs-keyword">return</span> <span class="hljs-literal">false</span>}},</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-32">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-32">&#182;</a>
+              </div>
+              <h4 id="is-array">is.Array</h4>
+<p><code>is.Array(ar)</code><br />Returns true if <code>ar</code> is an array</p>
+<blockquote>
+<p>&gt; is.Array([1])
+true
+&gt; is.Array({a: 1})
+false</p>
+</blockquote>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="hljs-built_in">Array</span>: <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">ar</span>)
+    </span>{ <span class="hljs-keyword">return</span> <span class="hljs-built_in">Array</span>.isArray(ar)},</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-33">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-33">&#182;</a>
+              </div>
+              <h4 id="is-number">is.Number</h4>
+<p><code>is.Number(n)</code><br />Returns true if <code>n</code> is a number</p>
+<blockquote>
+<p>&gt; is.Number(1)
+true</p>
+</blockquote>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="hljs-built_in">Number</span>: <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">n</span>)
+    </span>{ <span class="hljs-keyword">return</span> !<span class="hljs-built_in">isNaN</span>(<span class="hljs-built_in">parseFloat</span>(n)) &amp;&amp; <span class="hljs-built_in">isFinite</span>(n)},</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-34">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-34">&#182;</a>
+              </div>
+              <h4 id="is-string">is.String</h4>
+<p><code>is.String(s)</code><br />Returns true if <code>s</code> is a string</p>
+<blockquote>
+<p>&gt; is.String(“abc”)
+true</p>
+</blockquote>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    <span class="hljs-built_in">String</span>: <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">s</span>)
+    </span>{ <span class="hljs-keyword">return</span> <span class="hljs-keyword">typeof</span> s === <span class="hljs-string">'string'</span>},</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-35">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-35">&#182;</a>
+              </div>
+              <h4 id="is-indexed">is.Indexed</h4>
+<p><code>is.Indexed(ar)</code><br />Returns true if <code>ar</code> is an indexed type, like string or array</p>
+<blockquote>
+<p>&gt; is.Indexed(“abc”)
+true
+&gt; is.Indexed([1])
+true
+&gt; is.Indexed({a: 1})
+false</p>
+</blockquote>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    Indexed: <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">ar</span>)
+    </span>{ <span class="hljs-keyword">return</span> <span class="hljs-keyword">typeof</span> ar === <span class="hljs-string">'string'</span> || is.Array(ar)},</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-36">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-36">&#182;</a>
+              </div>
+              <h4 id="is-unique">is.Unique</h4>
+<p><code>is.Unique(v,index,self)</code><br />Returns true for first uniq value of <code>v</code> in an array</p>
+<blockquote>
+<p>&gt; [1, 2, 2, 3, 4].filter(is.Unique)
+[1, 2, 3, 4]</p>
+</blockquote>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    Unique:  <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">v, index, self</span>)
+    </span>{ <span class="hljs-keyword">return</span> self.indexOf(v) === index},</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-37">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-37">&#182;</a>
+              </div>
+              <h4 id="is-undefined">is.Undefined</h4>
+<p><code>is.Undefined(v)</code><br />Returns true of value <code>v</code> is undefined</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    Undefined: <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">v</span>)
+    </span>{ <span class="hljs-keyword">return</span>  v == <span class="hljs-literal">undefined</span>},</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-38">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-38">&#182;</a>
+              </div>
+              <h4 id="is-notundefined">is.notUndefined</h4>
+<p><code>is.notUndefined(v)</code><br />Returns true of value <code>v</code> is not undefined</p>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    notUndefined: <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">v</span>)
+    </span>{ <span class="hljs-keyword">return</span>  v != <span class="hljs-literal">undefined</span>}
+}</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-39">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-39">&#182;</a>
+              </div>
+              <h2 id="composition">Composition</h2>
+
+            </div>
+            
+        </li>
+        
+        
+        <li id="section-40">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-40">&#182;</a>
+              </div>
+              <h4 id="comp">comp</h4>
+<p><code>comp(ct, fn1, [fn2,arg1,arg2], ... fnn)</code><br />Returns a new composed function<br />
+<code>ct</code> can be <code>-&gt;</code> result of previous function as the first argument of current function (thread-first)<br />
+or <code>-&gt;&gt;</code> result of previous function as the last argument of current function (thread-last)<br />
+extra parameters can be passed to any function using the array notation: [ops.minus, 20]</p>
+<blockquote>
+<p>&gt; var squareinc = comp(“-&gt;”, ops.square, ops.inc);
+&gt; squareinc(10)
+101</p>
+<p>&gt; var sqIncMinDec1 = comp(
+      “-&gt;”, 
+      ops.square, 
+      ops.inc,
+      [ops.minus, 20],
+      ops.dec);</p>
+<p>&gt; sqIncMinDec1(2)
+-16</p>
+<p>&gt; var sqIncMinDec2 = comp(
+      “-&gt;&gt;”,
+      ops.square,
+      ops.inc,
+      [ops.minus, 20],
+      ops.dec);</p>
+<p>&gt; sqIncMinDec2(2)
+14</p>
+</blockquote>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">var</span> comp = <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>)
+</span>{ <span class="hljs-keyword">var</span> args = [].slice.call(<span class="hljs-built_in">arguments</span>);
+  <span class="hljs-keyword">var</span> ct = first(args);
+  <span class="hljs-keyword">var</span> fns = rest(args);
+  <span class="hljs-keyword">var</span> fnsli = fns.length ;
+  <span class="hljs-keyword">return</span> <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">f</span>)
+  </span>{ <span class="hljs-keyword">var</span> res = f;
+    <span class="hljs-keyword">for</span> (<span class="hljs-keyword">var</span> i=<span class="hljs-number">0</span>; i &lt; fnsli;  i++)
+    { <span class="hljs-keyword">var</span> fnsname,fnsarg;
+      <span class="hljs-keyword">var</span> fnsi = fns[i];
+      <span class="hljs-keyword">if</span> (!is.Array(fnsi))
+      {  res = fnsi(res)}
+      <span class="hljs-keyword">else</span>
+      { fnsname = first(fnsi);
+	fnsarg = rest(fnsi);
+	<span class="hljs-keyword">if</span> (ct == <span class="hljs-string">'-&gt;'</span>)
+	{ res = fnsname(res,fnsarg)}
+	<span class="hljs-keyword">else</span> <span class="hljs-keyword">if</span> (ct == <span class="hljs-string">'-&gt;&gt;'</span>)
+	{ res = fnsname(fnsarg,res) }
+	<span class="hljs-keyword">else</span>
+	{ res = fnsname(fnsarg,res)}}}
+    <span class="hljs-keyword">return</span> res}}</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-41">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-41">&#182;</a>
+              </div>
+              <h4 id="map">map</h4>
+<p><code>map(f, ar)</code><br />Returns a new array with values calculated by applying f to elements of <code>ar</code></p>
+<blockquote>
+<p>&gt; map(ops.inc, [1, 2, 3, 4, 5])
+[2, 3, 4, 5, 6]</p>
+</blockquote>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">var</span> map = <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">f, ar</span>)
+</span>{ <span class="hljs-keyword">var</span> arli = ar.length;
+  <span class="hljs-keyword">var</span> res = <span class="hljs-keyword">new</span> <span class="hljs-built_in">Array</span>(arli);
+  <span class="hljs-keyword">for</span> (<span class="hljs-keyword">var</span> i = <span class="hljs-number">0</span>; i &lt;  arli; i++)
+  { res[i] = f(ar[i])}
+  <span class="hljs-keyword">return</span> res}</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-42">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-42">&#182;</a>
+              </div>
+              <h2 id="array">Array</h2>
+<p>Array helper functions</p>
+
+            </div>
+            
+        </li>
+        
+        
+        <li id="section-43">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-43">&#182;</a>
+              </div>
+              <h4 id="uniq">uniq</h4>
+<p><code>uniq(ar)</code><br />Returns a unique array</p>
+<blockquote>
+<p>&gt; uniq([1,2,1,3,2,3])
+[1, 2, 3]</p>
+</blockquote>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">var</span> uniq = <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">ar</span>)
+</span>{ <span class="hljs-keyword">return</span> ar.filter(is.Unique)}</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-44">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-44">&#182;</a>
+              </div>
+              <h4 id="range">range</h4>
+<p><code>range(n)</code><br />Returns a new array with size <code>n</code> and incremental values from 0</p>
+<blockquote>
+<p>&gt; range(5)
+[0, 1, 2, 3, 4]</p>
+</blockquote>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">var</span> range = <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">n</span>)
+</span>{ <span class="hljs-keyword">var</span> res = <span class="hljs-keyword">new</span> <span class="hljs-built_in">Array</span>(n);
+  <span class="hljs-keyword">for</span> (<span class="hljs-keyword">var</span> i = <span class="hljs-number">0</span>; i &lt; n; i++)
+  { res[i] = i}
+  <span class="hljs-keyword">return</span> res}</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-45">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-45">&#182;</a>
+              </div>
+              <h4 id="cons">cons</h4>
+<p><code>cons(x,ar)</code><br />Returns a new array where <code>x</code> is the first element and <code>ar</code> is the rest</p>
+<blockquote>
+<p>&gt; cons(10, [1, 2, 3])
+[10, 1, 2, 3]</p>
+</blockquote>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">var</span> cons = <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">x,ar</span>)
+</span>{ <span class="hljs-keyword">var</span> res = ar.slice(<span class="hljs-number">0</span>);
+  res.unshift(x);
+  <span class="hljs-keyword">return</span> res}</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-46">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-46">&#182;</a>
+              </div>
+              <h4 id="conj">conj</h4>
+<p><code>conj(ar,x)</code><br />Returns a new array where <code>x</code> is added as the last element to <code>ar</code></p>
+<blockquote>
+<p>&gt; conj([1, 2, 3], 10)
+[1, 2, 3, 10]</p>
+</blockquote>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">var</span> conj = <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">ar,x</span>)
+</span>{ <span class="hljs-keyword">var</span> res = ar.slice(<span class="hljs-number">0</span>);
+  res.push(x);
+  <span class="hljs-keyword">return</span> res}</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-47">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-47">&#182;</a>
+              </div>
+              <h4 id="merge">merge</h4>
+<p><code>merge(ar, arb)</code><br /> Returns a merged array of array <code>ar</code> and <code>arb</code></p>
+<blockquote>
+<p>&gt; merge([1, 2], [3, 4])
+[1, 2, 3, 4]
+&gt; merge(“ab”, “cd”)
+“abcd”</p>
+</blockquote>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">var</span> merge = <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">ar,arb</span>)
+</span>{ <span class="hljs-keyword">return</span> ar.concat(arb)}</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-48">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-48">&#182;</a>
+              </div>
+              <h4 id="nth">nth</h4>
+<p><code>nth(ar,i)</code><br />Returns the <code>i</code>th element of array <code>ar</code> or a string</p>
+<blockquote>
+<p>&gt; nth([1, 2, 3],0)
+1
+&gt; nth(“abc”,0)
+“a”</p>
+</blockquote>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">var</span> nth = <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">ar, i</span>)
+</span>{ <span class="hljs-keyword">return</span> ar[i]}</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-49">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-49">&#182;</a>
+              </div>
+              <h4 id="first">first</h4>
+<p><code>first(ar)</code><br />Returns the first element of array <code>ar</code> or a string</p>
+<blockquote>
+<p>&gt; first([1, 2, 3])
+1
+&gt; first(“abc”)
+“a”</p>
+</blockquote>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">var</span> first = <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">ar</span>)
+</span>{ <span class="hljs-keyword">return</span> nth(ar, <span class="hljs-number">0</span>)}</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-50">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-50">&#182;</a>
+              </div>
+              <h4 id="second">second</h4>
+<p><code>second(ar)</code><br />Returns the second element of array <code>ar</code> or a string</p>
+<blockquote>
+<p>&gt; second([1, 2, 3])
+2
+&gt; second(“abc”)
+“b”</p>
+</blockquote>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">var</span> second = <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">ar</span>)
+</span>{ <span class="hljs-keyword">return</span> nth(ar, <span class="hljs-number">1</span>)}</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-51">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-51">&#182;</a>
+              </div>
+              <h4 id="rest">rest</h4>
+<p><code>rest(ar)</code><br />Returns all but the first element of array <code>ar</code> or a string</p>
+<blockquote>
+<p>&gt; rest([1, 2, 3])
+[2, 3]
+&gt; rest(“abc”)
+“bc”</p>
+</blockquote>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">var</span> rest = <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">ar</span>)
+</span>{ <span class="hljs-keyword">return</span> ar.slice(<span class="hljs-number">1</span>)}</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-52">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-52">&#182;</a>
+              </div>
+              <h4 id="last">last</h4>
+<p><code>last(ar)</code><br />Returns the last element of array <code>ar</code> or a string</p>
+<blockquote>
+<p>&gt; last([1, 2, 3])
+3
+&gt; last(“abc”)
+“c”</p>
+</blockquote>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">var</span> last = <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">ar</span>)
+</span>{ <span class="hljs-keyword">return</span> nth(ar, ar.length - <span class="hljs-number">1</span>)}</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-53">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-53">&#182;</a>
+              </div>
+              <h4 id="interpose">interpose</h4>
+<p><code>interpose(sep,ar)</code><br />Returns an interposed string from array <code>ar</code> using separator char <code>sep</code></p>
+<blockquote>
+<p>&gt; interpose(“,”,[“a”,”b”,”c”])
+“a,b,c”</p>
+</blockquote>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">var</span> interpose = <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">sep,ar</span>)
+</span>{ <span class="hljs-keyword">return</span> ar.join(sep)}</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-54">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-54">&#182;</a>
+              </div>
+              <h2 id="string">String</h2>
+
+            </div>
+            
+        </li>
+        
+        
+        <li id="section-55">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-55">&#182;</a>
+              </div>
+              <h4 id="strim">strim</h4>
+<p><code>strim(s)</code><br />Trim a string</p>
+<blockquote>
+<p>&gt; strim(“ abc def  “)
+“abc def”</p>
+</blockquote>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">var</span> strim = <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">s</span>)
+</span>{ <span class="hljs-keyword">return</span> s.trim()}</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-56">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-56">&#182;</a>
+              </div>
+              <h4 id="stringtonumber">stringToNumber</h4>
+<p><code>stringToNumber(s)</code><br />Returns a parsed number if possible from string</p>
+<blockquote>
+<p>&gt; stringToNumber(“ 42 “)
+42</p>
+</blockquote>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">var</span> stringToNumber = <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">s</span>)
+</span>{ <span class="hljs-keyword">if</span> (is.Number(s))
+  { <span class="hljs-keyword">return</span> <span class="hljs-built_in">parseFloat</span>(s)}
+  <span class="hljs-keyword">else</span>
+  { <span class="hljs-keyword">return</span> s}}</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-57">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-57">&#182;</a>
+              </div>
+              <h4 id="strimnumber">strimNumber</h4>
+<p><code>strimNumber(s)</code><br />Returns a trimmed and if possible a parsed number from string</p>
+<blockquote>
+<p>&gt; strimNumber(“ 42 “)
+42</p>
+</blockquote>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">var</span> strimNumber = comp(
+    <span class="hljs-string">"-&gt;"</span>,
+    strim,
+    stringToNumber);</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-58">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-58">&#182;</a>
+              </div>
+              <h4 id="splitcolnames">splitColnames</h4>
+<p><code>splitColnames(s)</code><br />Splits a string at commas and returns an array of strings.</p>
+<blockquote>
+<p>&gt; splitColnames(“a,b,c”)
+[“a”, “b”, “c”]</p>
+</blockquote>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">var</span> splitColnames = <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">s</span>)
+  </span>{ <span class="hljs-keyword">var</span> cols;
+    <span class="hljs-keyword">if</span> (is.String(s))
+    { cols = s.split(<span class="hljs-string">","</span>)}
+    <span class="hljs-keyword">else</span>
+    { cols = s.slice()}
+    <span class="hljs-keyword">return</span> cols}</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-59">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-59">&#182;</a>
+              </div>
+              <h2 id="date">Date</h2>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>
+<span class="hljs-keyword">var</span> dt = {
+    
+    now: <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params"></span>)
+    </span>{ <span class="hljs-keyword">return</span> <span class="hljs-keyword">new</span> <span class="hljs-built_in">Date</span>()},
+    
+    getYear: <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">d</span>)
+    </span>{ <span class="hljs-keyword">return</span> d.getUTCFullYear()},
+
+    getMonth: <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">d</span>)
+    </span>{ <span class="hljs-keyword">return</span> d.getUTCMonth() * <span class="hljs-number">1</span> + <span class="hljs-number">1</span>},
+
+    getDay: <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">d</span>)
+    </span>{ <span class="hljs-keyword">return</span> d.getUTCDate()}
+<span class="hljs-comment">/* 
+   getUTCFullYear() // y
+   getUTCMonth()    // m
+   getUTCDate()     // d
+
+
+*/</span>
+}</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-60">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-60">&#182;</a>
+              </div>
+              <h2 id="object">Object</h2>
+
+            </div>
+            
+        </li>
+        
+        
+        <li id="section-61">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-61">&#182;</a>
+              </div>
+              <h4 id="keys">keys</h4>
+<p><code>keys(obj)</code><br />Returns the keys of an object</p>
+<blockquote>
+<p>&gt; keys({a:1,b:2})
+[“a”, “b”]</p>
+</blockquote>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">var</span> keys = <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">obj</span>)
+</span>{ <span class="hljs-keyword">if</span> (! is.Object(obj)) <span class="hljs-keyword">return</span> [];
+  <span class="hljs-keyword">return</span> <span class="hljs-built_in">Object</span>.keys(obj)}</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-62">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-62">&#182;</a>
+              </div>
+              <h4 id="vals">vals</h4>
+<p><code>vals(obj)</code><br />Returns the values of an object</p>
+<blockquote>
+<p>&gt; vals({a:1,b:2})
+[1, 2]</p>
+</blockquote>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">var</span> vals = <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">obj</span>)
+</span>{ <span class="hljs-keyword">if</span> (! is.Object(obj)) <span class="hljs-keyword">return</span> [];
+  <span class="hljs-keyword">var</span> kar = keys(obj);
+  <span class="hljs-keyword">var</span> karli = kar.length;
+  <span class="hljs-keyword">var</span> res = <span class="hljs-keyword">new</span> <span class="hljs-built_in">Array</span>(karli);
+  <span class="hljs-keyword">for</span> (<span class="hljs-keyword">var</span> i=<span class="hljs-number">0</span>; i &lt; karli; i++)
+  { res[i] = obj[kar[i]]}
+  <span class="hljs-keyword">return</span> res}</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-63">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-63">&#182;</a>
+              </div>
+              <h4 id="getv">getv</h4>
+<p><code>getv(obj,key)</code><br />Returns the value of key <code>key</code> of object <code>obj</code></p>
+<blockquote>
+<p>&gt; var o1 = {a:1,b:11};
+&gt; var o2 = [{a:1,b:11},{a:2,b:12}];
+&gt; var myb = comp(“-&gt;”, [getv, “b”]);
+&gt; myb(o1)
+11
+&gt; map(myb, o2)
+[11, 12]</p>
+</blockquote>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">var</span> getv = <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">obj,key</span>)
+</span>{ <span class="hljs-keyword">return</span> obj[key]}</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-64">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-64">&#182;</a>
+              </div>
+              <h4 id="getkv">getkv</h4>
+<p><code>getkv(obj,key)</code><br />Returns both key and value of key <code>key</code> of object <code>obj</code></p>
+<blockquote>
+<p>&gt; getkv({a: 1}, “a”)
+{a: 1}</p>
+</blockquote>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">var</span> getkv = <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">obj,key</span>)
+</span>{ <span class="hljs-keyword">var</span> res = {};
+  res[key] = obj[key];
+  <span class="hljs-keyword">return</span> res}</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-65">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-65">&#182;</a>
+              </div>
+              <h4 id="selectkeys">selectKeys</h4>
+<p><code>selectKeys(obj, ar)</code><br />Returns a new object containing only the values of input keys in array <code>ar</code></p>
+<blockquote>
+<p>&gt; selectKeys({a:1,b:2,c:3}, [“a”,”b”])
+{a: 1, b: 2} </p>
+</blockquote>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">var</span> selectKeys = <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">obj, ar</span>)
+</span>{ res = {};
+  <span class="hljs-keyword">var</span> arli = ar.length;
+  <span class="hljs-keyword">for</span> (<span class="hljs-keyword">var</span> i=<span class="hljs-number">0</span>; i &lt; arli;  i++)
+  { res[ar[i]] = obj[ar[i]]}
+  <span class="hljs-keyword">return</span> res}</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-66">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-66">&#182;</a>
+              </div>
+              <h4 id="count">count</h4>
+<p><code>count(obj)</code><br />Count the number of keys of an object</p>
+<blockquote>
+<p>&gt; count({a: 1, b:2})
+2
+&gt; count([1,2])
+2
+&gt; count(“ab”)
+2</p>
+</blockquote>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">var</span> count = <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">obj</span>)
+</span>{ <span class="hljs-keyword">if</span> (is.Object(obj) &amp;&amp; !is.Array(obj))
+  { <span class="hljs-keyword">return</span> keys(obj).length}
+  <span class="hljs-keyword">else</span>
+  { <span class="hljs-keyword">return</span> obj.length}}</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-67">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-67">&#182;</a>
+              </div>
+              <h5 id="queryobj">queryObj</h5>
+<p><code>queryObj(obj,q)</code><br />Returns a boolean after evaluating <code>q</code> queries on <code>obj</code></p>
+<blockquote>
+<p>&gt; var obj = {a:11,b:12,c:13};
+&gt; queryObj(obj,{a:11})
+true
+&gt; queryObj(obj,{a:1})
+false
+&gt; queryObj(obj,{a: {eq: 11}})
+true
+&gt; queryObj(obj,{a: {neq: 111}})
+true
+&gt; queryObj(obj,{a: {in: [1,11,111]}})
+true
+&gt; queryObj(obj,{a: {nin: [1,111]}, b: {nin: [2,22]}})
+true
+&gt; queryObj(obj,{a: {lte: 11}, b: {gte: 12}})
+true
+&gt; queryObj(obj,{a: {lt: 12}, b: {gt: 11}})
+true</p>
+</blockquote>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">var</span> queryObj = <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">obj,q</span>)
+</span>{ <span class="hljs-keyword">var</span> res = [];
+  <span class="hljs-keyword">var</span> kar = keys(q);
+  <span class="hljs-keyword">var</span> karli = kar.length;
+  <span class="hljs-keyword">for</span> (<span class="hljs-keyword">var</span> i = <span class="hljs-number">0</span>; i &lt; karli; i++)
+  { <span class="hljs-keyword">var</span> op, val;
+    <span class="hljs-keyword">if</span> (is.Object(q[kar[i]]))
+    { op = keys(q[kar[i]]);
+      val = q[kar[i]][op]}
+    <span class="hljs-keyword">else</span>
+    { op = <span class="hljs-string">'eq'</span>;
+      val = q[kar[i]]}
+    <span class="hljs-keyword">var</span> opfn = ops[op];
+    res.push(opfn(obj[kar[i]], val))}
+  <span class="hljs-keyword">return</span> res.reduce(ops.and)
+}</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-68">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-68">&#182;</a>
+              </div>
+              <h4 id="filterobj">filterObj</h4>
+<p><code>filterObj(obj,f)</code><br />Filters elements of object <code>obj</code> by applying function <code>f</code> to values of <code>obj</code>, returns a new filtered object </p>
+<blockquote>
+<p>&gt; var obj = {a: 1, b: “b”, c: [], d: {}, f: “11”};
+&gt; filterObj(obj, is.Number);
+{a: 1, f: 11}</p>
+</blockquote>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">var</span> filterObj = <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">obj,f</span>)
+</span>{ <span class="hljs-keyword">var</span> res = {};
+  <span class="hljs-keyword">var</span> kar = keys(obj);
+  <span class="hljs-keyword">var</span> karli = kar.length;
+  <span class="hljs-keyword">for</span> (<span class="hljs-keyword">var</span> i = <span class="hljs-number">0</span>; i &lt; karli; i++)
+  { <span class="hljs-keyword">if</span> (f(obj[kar[i]]))
+    { res[kar[i]] = obj[kar[i]]}}
+  <span class="hljs-keyword">return</span> res}</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-69">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-69">&#182;</a>
+              </div>
+              <h4 id="cloneobject">cloneObject</h4>
+<p><code>cloneObject(obj)</code><br />Returns a new object that has the same keys and values as object <code>obj</code></p>
+<blockquote>
+<p>&gt; cloneObject({a: 1})
+{a: 1}</p>
+</blockquote>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">var</span> cloneObject = <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">obj</span>)
+</span>{ <span class="hljs-keyword">var</span> res = {};
+  <span class="hljs-keyword">var</span> kar = keys(obj);
+  <span class="hljs-keyword">var</span> karli = kar.length;
+  <span class="hljs-keyword">for</span> (<span class="hljs-keyword">var</span> i = <span class="hljs-number">0</span>; i &lt; karli; i++)
+  { res[kar[i]] = obj[kar[i]]}
+  <span class="hljs-keyword">return</span> res}</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-70">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-70">&#182;</a>
+              </div>
+              <h4 id="mergeobjects">mergeObjects</h4>
+<p><code>mergeObjects(obj,objb)</code><br />Merge two objects, <code>objb</code> to <code>obj</code></p>
+<blockquote>
+<p>&gt; mergeObjects({a: 1},{b:2})
+{a: 1, b: 2}</p>
+</blockquote>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">var</span> mergeObjects = <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">obj,objb</span>)
+</span>{ <span class="hljs-keyword">var</span> res = cloneObject(obj);
+  <span class="hljs-keyword">var</span> kar = keys(objb);
+  <span class="hljs-keyword">var</span> karli = kar.length;
+  <span class="hljs-keyword">for</span> (<span class="hljs-keyword">var</span> i = <span class="hljs-number">0</span>; i &lt; karli; i++)
+  { res[kar[i]] =  objb[kar[i]]}
+  <span class="hljs-keyword">return</span> res}</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-71">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-71">&#182;</a>
+              </div>
+              <h2 id="dataset">Dataset</h2>
+
+            </div>
+            
+        </li>
+        
+        
+        <li id="section-72">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-72">&#182;</a>
+              </div>
+              <h3 id="object-array">Object Array</h3>
+
+            </div>
+            
+        </li>
+        
+        
+        <li id="section-73">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-73">&#182;</a>
+              </div>
+              <h4 id="colnames">colNames</h4>
+<p><code>colNames(oar)</code><br />Returns the column names (keys) of the first row of <code>oar</code></p>
+<blockquote>
+<p>&gt; colNames([{a: 1, b:2}])
+[“a”, “b”]</p>
+</blockquote>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">var</span> colNames =  <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">oar</span>)
+</span>{ <span class="hljs-keyword">return</span> keys(oar[<span class="hljs-number">0</span>])}</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-74">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-74">&#182;</a>
+              </div>
+              <h4 id="selectcolumn">selectColumn</h4>
+<p><code>selectColumn(colnames, oar)</code><br />
+Filter <code>oar</code> to selected columns. 
+Returns an <code>oar</code>.<br />
+<code>colnames</code> can be: string <code>&#39;col1,col2&#39;</code> or array
+<code>[&#39;col1&#39;,&#39;col2&#39;]</code>.<br /></p>
+<blockquote>
+<p>&gt; var oar = [{a:11,b:12,c:13},{a:21,b:22,c:23},{a:31,b:32,c:33}];
+&gt; selectColumn(“a”,oar)
+[{“a”:11},{“a”:21},{“a”:31}]
+&gt; selectColumn(“a,c”,oar)
+[{“a”:11,”c”:13},{“a”:21,”c”:23},{“a”:31,”c”:33}]</p>
+</blockquote>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">var</span> selectColumn = <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">colnames, oar</span>)
+</span>{ <span class="hljs-keyword">var</span> oarli = oar.length;
+  <span class="hljs-keyword">var</span> res = <span class="hljs-keyword">new</span> <span class="hljs-built_in">Array</span>(oarli);
+  <span class="hljs-keyword">var</span> cols = splitColnames(colnames);
+  <span class="hljs-keyword">var</span> colsli = cols.length;
+  <span class="hljs-keyword">for</span> (<span class="hljs-keyword">var</span> row = <span class="hljs-number">0</span>; row &lt; oarli; row++)
+  { <span class="hljs-keyword">var</span> onerow = {};
+    <span class="hljs-keyword">for</span> (<span class="hljs-keyword">var</span> col = <span class="hljs-number">0</span>; col &lt; colsli; col++)
+    { onerow[cols[col]] = oar[row][cols[col]]}
+    res[row]=onerow}
+  <span class="hljs-keyword">return</span> res}</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-75">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-75">&#182;</a>
+              </div>
+              <h4 id="pluck">pluck</h4>
+<p><code>pluck(colnames,oar)</code><br />Pluck, calls selectColumn with <code>mtx</code> as outType, returns a flattened array if only one column is selected.</p>
+<blockquote>
+<p>&gt; var oar = [{a:11,b:12,c:13},{a:21,b:22,c:23},{a:31,b:32,c:33}];
+&gt; pluck(“a”,oar)
+[11,21,31]
+&gt; pluck(“a,c”,oar)
+[[11,13],[21,23],[31,33]]</p>
+</blockquote>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">var</span> pluck = <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">colnames,oar</span>)
+</span>{ <span class="hljs-keyword">var</span> res = rest(oar2mtx(selectColumn(colnames, oar)));
+  <span class="hljs-keyword">if</span> (res[<span class="hljs-number">0</span>].length == <span class="hljs-number">1</span>)
+  { <span class="hljs-keyword">return</span> flatten(res)}
+  <span class="hljs-keyword">else</span>
+  { <span class="hljs-keyword">return</span> res}
+}</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-76">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-76">&#182;</a>
+              </div>
+              <h4 id="queryoar">queryOar</h4>
+<p><code>queryOar(oar,q)</code><br />Queries object <code>oar</code> using <code>q</code>, returns matching rows</p>
+<blockquote>
+<p>&gt; var oar = [{a:11,b:12,c:13},{a:21,b:22,c:23},{a:31,b:32,c:33}];
+&gt; queryOar(oar, {a: {gt: 11}, b:{lte: 22}})
+[{“a”:21,”b”:22,”c”:23}]</p>
+</blockquote>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">var</span> queryOar = <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">oar,q</span>)
+</span>{ <span class="hljs-keyword">var</span> res = [];
+  <span class="hljs-keyword">var</span> oarli = oar.length;
+  <span class="hljs-keyword">for</span> (<span class="hljs-keyword">var</span> i = <span class="hljs-number">0</span>; i &lt; oarli; i++)
+  { <span class="hljs-keyword">if</span> (queryObj(oar[i],q))
+    { res.push(oar[i])}}
+  <span class="hljs-keyword">return</span> res}</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-77">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-77">&#182;</a>
+              </div>
+              <h4 id="indexby">indexBy</h4>
+<p><code>indexBy(oar, lookupkey)</code><br />Create a constant time lookup table for values of <code>lookupkey</code> in <code>oar</code> </p>
+<blockquote>
+<p>&gt; var oar = [{a:11,b:12,c:13},{a:21,b:22,c:23},{a:31,b:32,c:33}];
+&gt; var lta = indexBy(oar,”a”);
+&gt; lta[21]
+1</p>
+</blockquote>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">var</span> indexBy = <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">oar, lookupkey</span>)
+</span>{ <span class="hljs-keyword">var</span> res = {};
+  <span class="hljs-keyword">var</span> oarli = oar.length;
+  <span class="hljs-keyword">for</span> (<span class="hljs-keyword">var</span> i=<span class="hljs-number">0</span>; i &lt; oarli; i++)
+  { res[oar[i][lookupkey]] = i}
+  <span class="hljs-keyword">return</span> res}</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-78">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-78">&#182;</a>
+              </div>
+              <h4 id="addcolumn">addColumn</h4>
+<p><code>addColumn(colname, values, oar)</code><br />Add a new column with values to an <code>oar</code>, returns a new <code>oar</code></p>
+<blockquote>
+<p>&gt; addColumn(“c”,[13,23],[{a:11,b:12},{a:21,b:22}])
+[{“a”:11,”b”:12,”c”:13},{“a”:21,”b”:22,”c”:23}]</p>
+</blockquote>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">var</span> addColumn = <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">colname, values, oar</span>)
+</span>{ <span class="hljs-keyword">var</span> oarli = oar.length;
+  <span class="hljs-keyword">var</span> res = <span class="hljs-keyword">new</span> <span class="hljs-built_in">Array</span>(oarli);
+  <span class="hljs-keyword">for</span> (<span class="hljs-keyword">var</span> i = <span class="hljs-number">0</span>; i &lt; oarli; i++)
+  { <span class="hljs-keyword">var</span> oneobj = cloneObject(oar[i]);
+    oneobj[colname] = values[i];
+    res[i] = oneobj}
+  <span class="hljs-keyword">return</span> res}</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-79">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-79">&#182;</a>
+              </div>
+              <h3 id="matrix">Matrix</h3>
+
+            </div>
+            
+        </li>
+        
+        
+        <li id="section-80">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-80">&#182;</a>
+              </div>
+              <h4 id="flatten">flatten</h4>
+<p><code>flatten(mtx)</code><br>Returns a flattened array</p>
+<blockquote>
+<p>&gt; flatten([[1],[2]])
+[1, 2]</p>
+</blockquote>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">var</span> flatten = <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">mtx</span>)
+</span>{ <span class="hljs-keyword">return</span> [].concat.apply([],mtx)}</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-81">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-81">&#182;</a>
+              </div>
+              <h4 id="flatuniq">flatuniq</h4>
+<p><code>flatuniq(mtx)</code><br />Returns a flattened uniq array</p>
+<blockquote>
+<p>&gt; flatuniq([[1,2],[2,3],[3,4]])
+[1, 2, 3, 4]</p>
+</blockquote>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">var</span> flatuniq = comp(
+    <span class="hljs-string">"-&gt;"</span>,
+    flatten,
+    uniq);</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-82">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-82">&#182;</a>
+              </div>
+              <h4 id="transpose">transpose</h4>
+<p><code>transpose(mtx)</code><br />Returns a new transposed matrix array from <code>mtx</code>. </p>
+<blockquote>
+<p>&gt; transpose([[‘Alice’,  ‘Bob’, ‘Rich’],
+            [33, 24, 42],
+            [false, false, true]])</p>
+<blockquote>
+<p>[[“Alice”,33,false],
+ [“Bob”,24,false],
+ [“Rich”,42,true]]</p>
+</blockquote>
+<p>&gt; transpose([[“Alice”,33,false],
+            [“Bob”,24,false],
+            [“Rich”,42,true]])</p>
+<blockquote>
+<p>[[“Alice”,”Bob”,”Rich”],
+ [33,24,42],
+ [false,false,true]]</p>
+</blockquote>
+</blockquote>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">var</span> transpose = zip = unzip = <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">mtx</span>)
+</span>{ <span class="hljs-keyword">var</span> arli = mtx[<span class="hljs-number">0</span>].length;
+  <span class="hljs-keyword">var</span> mtxli = mtx.length;
+  <span class="hljs-keyword">var</span> res = <span class="hljs-keyword">new</span> <span class="hljs-built_in">Array</span>(arli);
+  <span class="hljs-keyword">for</span> (<span class="hljs-keyword">var</span> i = <span class="hljs-number">0</span>; i &lt; arli; i++)
+  { <span class="hljs-keyword">var</span> resrow = <span class="hljs-keyword">new</span> <span class="hljs-built_in">Array</span>(mtxli);
+    <span class="hljs-keyword">for</span> (<span class="hljs-keyword">var</span> j = <span class="hljs-number">0</span>; j &lt; mtxli; j++)
+    { resrow[j] = mtx[j][i]}
+    res[i] = resrow}
+  <span class="hljs-keyword">return</span> res}</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-83">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-83">&#182;</a>
+              </div>
+              <h4 id="joinobjects">joinObjects</h4>
+<p><code>joinObjects(mtx,joinkey)</code><br />Join two or more object arrays using a joinkey, where
+<code>mtx</code> is an array of <code>oar</code>-s ex. [oar, oarb, oarc], 
+<code>joinkey</code> is used as key for joining objects, it must have unique values.</p>
+<blockquote>
+<p>&gt; var oar = [{a: 11, b:12},{a: 21, b:22}];
+&gt; var oarb = [{a: 11, c:13},{a: 21, c:23}];
+&gt; var oarc = [{a: 11, d:14},{a: 21, d:24}];
+&gt; joinObjects([oar, oarb, oarc],”a”)
+[{“a”:11,”b”:12,”c”:13,”d”:14},{“a”:21,”b”:22,”c”:23,”d”:24}]</p>
+</blockquote>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">var</span> joinObjects = <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">mtx,joinkey</span>)
+</span>{ <span class="hljs-keyword">var</span> joinTwoOars = <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">oar,oarb</span>)
+  </span>{ <span class="hljs-keyword">var</span> oarli = oar.length;
+    <span class="hljs-keyword">var</span> res = <span class="hljs-keyword">new</span> <span class="hljs-built_in">Array</span>(oarli);
+    <span class="hljs-keyword">var</span> lookupTable = indexBy(oarb,joinkey);
+    <span class="hljs-keyword">for</span> (<span class="hljs-keyword">var</span> i=<span class="hljs-number">0</span>; i &lt; oarli;  i++)
+    { res[i] = mergeObjects(oar[i],oarb[lookupTable[oar[i][joinkey]]])}
+    <span class="hljs-keyword">return</span> res}
+  <span class="hljs-keyword">return</span> mtx.reduce(joinTwoOars)}</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-84">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-84">&#182;</a>
+              </div>
+              <h3 id="import-export">Import-Export</h3>
+
+            </div>
+            
+        </li>
+        
+        
+        <li id="section-85">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-85">&#182;</a>
+              </div>
+              <h4 id="mtx2oar">mtx2oar</h4>
+<p><code>mtx2oar(mtx)</code><br />Converts matrix array <code>mtx</code> to <code>oar</code> using first row as <code>colnames</code></p>
+<blockquote>
+<p>&gt; mtx2oar([[“a”,”b”],[1,2],[3,4],[5,6]])
+[{“a”:1,”b”:2},{“a”:3,”b”:4},{“a”:5,”b”:6}]</p>
+</blockquote>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">var</span> mtx2oar = <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">mtx</span>)
+</span>{ res = [];
+  <span class="hljs-keyword">var</span> colnames = first(mtx);
+  <span class="hljs-keyword">var</span> colli = colnames.length;
+  <span class="hljs-keyword">var</span> rowli = mtx.length;
+  <span class="hljs-keyword">for</span> (<span class="hljs-keyword">var</span> i=<span class="hljs-number">1</span>; i&lt;rowli;  i++)
+  {  obj = {};
+     <span class="hljs-keyword">for</span> (<span class="hljs-keyword">var</span> j=<span class="hljs-number">0</span>; j&lt;colli; j++)
+     { obj[colnames[j]] = mtx[i][j]}
+     res.push(obj)}
+  <span class="hljs-keyword">return</span> res}</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-86">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-86">&#182;</a>
+              </div>
+              <h4 id="oar2mtx">oar2mtx</h4>
+<p><code>oar2mtx(oar)</code><br />Converts object array <code>oar</code> to a matrix</p>
+<blockquote>
+<p>&gt; oar2mtx([{“a”:1,”b”:2},{“a”:3,”b”:4},{“a”:5,”b”:6}])
+[[“a”,”b”],[1,2],[3,4],[5,6]]</p>
+</blockquote>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">var</span> oar2mtx = <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">oar</span>)
+</span>{ <span class="hljs-keyword">var</span> cols = colNames(oar);
+  <span class="hljs-keyword">var</span> oarli = oar.length;
+  <span class="hljs-keyword">var</span> rowli = cols.length;
+  <span class="hljs-keyword">var</span> res = <span class="hljs-keyword">new</span> <span class="hljs-built_in">Array</span>(oarli);
+  <span class="hljs-keyword">for</span> (<span class="hljs-keyword">var</span> i = <span class="hljs-number">0</span>; i &lt; oarli; i++)
+  { <span class="hljs-keyword">var</span> onerow = <span class="hljs-keyword">new</span> <span class="hljs-built_in">Array</span>(rowli);
+    <span class="hljs-keyword">for</span> (<span class="hljs-keyword">var</span> j = <span class="hljs-number">0</span>; j &lt; rowli; j++)
+    { onerow[j] = oar[i][cols[j]]}
+    res[i] = onerow}
+  <span class="hljs-keyword">return</span> cons(cols, res)}</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-87">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-87">&#182;</a>
+              </div>
+              <h4 id="csv2mtx">csv2mtx</h4>
+<p><code>csv2mtx(sep, s)</code><br />Converts CSV string <code>s</code> to a matrix array using separator char <code>sep</code></p>
+<blockquote>
+<p>&gt; var csv = “a,b\n1,2\n21,22\n31,32”
+&gt; csv2mtx(“,”,csv)
+[[“a”,”b”],[1,2],[21,22],[31,32]]</p>
+</blockquote>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">var</span> csv2mtx = <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">sep, s</span>)
+</span>{ <span class="hljs-keyword">if</span> (sep == <span class="hljs-literal">undefined</span>) <span class="hljs-keyword">var</span> sep = <span class="hljs-string">","</span>;
+  <span class="hljs-keyword">var</span> splitRow = <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">res,row</span>)
+  </span>{ res.push(map(strimNumber, row.split(sep)));
+    <span class="hljs-keyword">return</span> res}
+  <span class="hljs-keyword">return</span> s.split(<span class="hljs-string">"\n"</span>).reduce(splitRow, [])}</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-88">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-88">&#182;</a>
+              </div>
+              <h4 id="csv2oar">csv2oar</h4>
+<p><code>csv2oar(sep, s)</code><br />Converts CSV string <code>s</code> to a dataset object using separator char <code>sep</code></p>
+<blockquote>
+<p>&gt; var csv = “a,b\n1,2\n21,22\n31,32”
+&gt; csv2oar(“,”,csv)
+[{“a”:1,”b”:2},{“a”:21,”b”:22},{“a”:31,”b”:32}]</p>
+</blockquote>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">var</span> csv2oar = <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">sep, s</span>)
+</span>{ <span class="hljs-keyword">return</span> mtx2oar(csv2mtx(sep,s))}</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-89">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-89">&#182;</a>
+              </div>
+              <h4 id="oar2csv">oar2csv</h4>
+<p><code>oar2csv(sep, obj)</code><br />Converts object <code>obj</code> to a CSV string using separator char <code>sep</code></p>
+<blockquote>
+<p>&gt; var ar = [{a:1,b:2},{a:21,b:22},{a:31,b:32}];
+&gt; oar2csv(“,”, ar)
+“a,b\n1,2\n21,22\n31,32”</p>
+</blockquote>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">var</span> oar2csv = <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">sep, oar</span>)
+</span>{ <span class="hljs-keyword">var</span> iposeVals = comp(<span class="hljs-string">"-&gt;&gt;"</span>, vals, [interpose, sep]);
+  <span class="hljs-keyword">var</span> csvAr = cons(colNames(oar), map(iposeVals, oar));
+  <span class="hljs-keyword">return</span> interpose(<span class="hljs-string">"\\n"</span>,csvAr)}</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-90">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-90">&#182;</a>
+              </div>
+              <h2 id="statistical">Statistical</h2>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>
+<span class="hljs-keyword">var</span> stat =  {</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-91">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-91">&#182;</a>
+              </div>
+              <h4 id="stat-max">stat.max</h4>
+<p><code>stat.max(ar)</code><br />Largest value of an array, returns a number</p>
+<blockquote>
+<p>&gt; stat.max([1,2,3,4,5])
+5</p>
+</blockquote>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    max: <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">ar</span>)
+    </span>{ <span class="hljs-keyword">return</span> <span class="hljs-built_in">Math</span>.max.apply(<span class="hljs-literal">null</span>, ar)},</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-92">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-92">&#182;</a>
+              </div>
+              <h4 id="stat-min">stat.min</h4>
+<p><code>stat.min(ar)</code><br />Smallest value of an array</p>
+<blockquote>
+<p>&gt; stat.min([1,2,3,4,5])
+1</p>
+</blockquote>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    min: <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">ar</span>)
+    </span>{ <span class="hljs-keyword">return</span> <span class="hljs-built_in">Math</span>.min.apply(<span class="hljs-literal">null</span>, ar)},</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-93">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-93">&#182;</a>
+              </div>
+              <h4 id="stat-sum">stat.sum</h4>
+<p><code>stat.sum(ar)</code><br />Sum of an array, returns a number</p>
+<blockquote>
+<p>&gt; stat.sum([1,2,3,4,5])
+15</p>
+</blockquote>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    sum: <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">ar</span>)
+    </span>{ <span class="hljs-keyword">return</span> ar.reduce(ops.plus)},</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-94">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-94">&#182;</a>
+              </div>
+              <h4 id="stat-sumsq">stat.sumsq</h4>
+<p><code>stat.sumsq(ar)</code><br />Sum of squares of an array, returns a number</p>
+<blockquote>
+<p>&gt; stat.sumsq([1,2,3,4,5])
+55</p>
+</blockquote>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    sumsq: <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">ar</span>)
+    </span>{ <span class="hljs-keyword">return</span> map(ops.square, ar).reduce(ops.plus)},</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-95">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-95">&#182;</a>
+              </div>
+              <h4 id="stat-mean">stat.mean</h4>
+<p><code>stat.mean(ar)</code><br />Arithmetic mean of an array, returns a number</p>
+<blockquote>
+<p>&gt; stat.mean([1,2,3,4,5])
+3</p>
+</blockquote>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    mean: <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">ar</span>)
+    </span>{ <span class="hljs-keyword">var</span> arl = ar.length;
+      <span class="hljs-keyword">if</span> (arl == <span class="hljs-number">0</span>)
+      { <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>}
+      <span class="hljs-keyword">else</span>
+      { <span class="hljs-keyword">return</span> stat.sum(ar) / arl}},</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-96">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-96">&#182;</a>
+              </div>
+              <h4 id="stat-mult">stat.mult</h4>
+<p><code>stat.mult(ar,arb)</code><br />Multiplication of two arrays, returns an array</p>
+<blockquote>
+<p>&gt; stat.mult([1,2,3,4,5],[1,2,3,4,5])
+[1,4,9,16,25]</p>
+</blockquote>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    mult: <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">ar,arb</span>)
+    </span>{ <span class="hljs-keyword">var</span> arli = ar.length;
+      <span class="hljs-keyword">var</span> res = <span class="hljs-keyword">new</span> <span class="hljs-built_in">Array</span>(arli);
+      <span class="hljs-keyword">for</span> (<span class="hljs-keyword">var</span> i=<span class="hljs-number">0</span>; i&lt;arli;  i++)
+      { res[i] = ar[i] * arb[i]}
+      <span class="hljs-keyword">return</span> res},</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-97">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-97">&#182;</a>
+              </div>
+              <h4 id="stat-wmean">stat.wmean</h4>
+<p><code>stat.wmean(ar,war)</code><br />Weighted mean of an array, returns a number</p>
+<blockquote>
+<p>&gt; stat.wmean([1,2,3,4,5],[1,2,3,4,5])
+3.6666666666666665</p>
+</blockquote>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre>    wmean: <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">ar, war</span>)
+    </span>{ <span class="hljs-keyword">var</span> sumwar = stat.sum(war);
+      <span class="hljs-keyword">if</span> (sumwar == <span class="hljs-number">0</span>)
+      { <span class="hljs-keyword">return</span> <span class="hljs-number">0</span>}
+      <span class="hljs-keyword">else</span>
+      { <span class="hljs-keyword">return</span> stat.sum(stat.mult(ar, war)) / sumwar}},
+
+
+
+}</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-98">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-98">&#182;</a>
+              </div>
+              <h2 id="set-theory">Set theory</h2>
+
+            </div>
+            
+        </li>
+        
+        
+        <li id="section-99">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-99">&#182;</a>
+              </div>
+              <h4 id="difference">difference</h4>
+<p><code>difference(ar,arb)</code><br />Difference of two arrays, (ar - arb), returns an array</p>
+<blockquote>
+<p>&gt; difference([1,2,3],[2,3,4])
+[1]
+&gt; difference([2,3,4],[1,2,3])
+[4]</p>
+</blockquote>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">var</span> difference = <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">ar,arb</span>)
+</span>{ <span class="hljs-keyword">return</span> ar.filter(<span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">x</span>)
+		  </span>{ <span class="hljs-keyword">return</span> arb.indexOf(x) &lt; <span class="hljs-number">0</span> })}</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-100">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-100">&#182;</a>
+              </div>
+              <h4 id="union">union</h4>
+<p><code>union(ar,arb)</code><br />Union of two arrays, returns an array</p>
+<blockquote>
+<p>&gt; union([1,2,3],[2,3,4])
+[1,2,3,4]</p>
+</blockquote>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">var</span> union = <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">ar,arb</span>)
+</span>{ <span class="hljs-keyword">return</span> uniq(ar.concat(arb))}</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-101">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-101">&#182;</a>
+              </div>
+              <h4 id="intersection">intersection</h4>
+<p><code>intersection(ar,arb)</code><br />Intersection of two arrays, returns an array</p>
+<blockquote>
+<p>&gt; intersection([1,2,3],[2,3,4])
+[2,3]</p>
+</blockquote>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">var</span> intersection = <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">ar,arb</span>)
+</span>{   <span class="hljs-keyword">return</span> ar.filter(<span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">x</span>)
+		     </span>{ <span class="hljs-keyword">if</span> (arb.indexOf(x) !== -<span class="hljs-number">1</span>)
+		      <span class="hljs-keyword">return</span> <span class="hljs-literal">true</span> })
+}</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-102">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-102">&#182;</a>
+              </div>
+              <h4 id="contains">contains</h4>
+<p><code>contains(ar,v)</code><br />Returns true if array <code>ar</code> contains value <code>v</code></p>
+<blockquote>
+<p>&gt; contains([1,2,3,4],1)
+true</p>
+</blockquote>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">var</span> contains = <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">ar,v</span>)
+</span>{ <span class="hljs-keyword">return</span> ops.in(v,ar)}</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-103">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-103">&#182;</a>
+              </div>
+              <h2 id="sort">Sort</h2>
+
+            </div>
+            
+        </li>
+        
+        
+        <li id="section-104">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-104">&#182;</a>
+              </div>
+              <h4 id="moreorless">moreOrLess</h4>
+<p><code>moreOrLess(x,y)</code><br />Comparison helper function, returns a number</p>
+<blockquote>
+<p>&gt; moreOrLess(1,2)
+-1
+&gt; moreOrLess(2,1)
+1
+&gt; moreOrLess(1,1)
+0</p>
+</blockquote>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">var</span> moreOrLess = <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">x, y</span>)
+</span>{ <span class="hljs-keyword">var</span> res = <span class="hljs-number">0</span>;
+  <span class="hljs-keyword">if</span> (x &gt; y) res = <span class="hljs-number">1</span>;
+  <span class="hljs-keyword">if</span> (x &lt; y) res = -<span class="hljs-number">1</span>;
+  <span class="hljs-keyword">return</span> res}</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-105">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-105">&#182;</a>
+              </div>
+              <h4 id="bykeyasc">byKeyAsc</h4>
+<p><code>byKeyAsc(k)</code><br />Returns a sort object helper function, result in ascending order of object key <code>k</code></p>
+<blockquote>
+<p>&gt; var oar = [{“a”:3,”b”:5},{“a”:1,”b”:6},{“a”:2,”b”:7}];
+&gt; <strong>oar.sort(byKeyAsc(‘a’))</strong> 
+<em>[{“a”:1,”b”:6},{“a”:2,”b”:7},{“a”:3,”b”:5}]</em>
+&gt; <strong>oar.sort(byKeyAsc(‘b’))</strong>
+<em>[{“a”:3,”b”:5},{“a”:1,”b”:6},{“a”:2,”b”:7}]</em></p>
+</blockquote>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">var</span> byKeyAsc = <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">k</span>)
+</span>{ <span class="hljs-keyword">return</span> <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">x, y</span>)
+  </span>{ <span class="hljs-keyword">return</span> moreOrLess(x[k], y[k])}}</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-106">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-106">&#182;</a>
+              </div>
+              <h4 id="bykeydesc">byKeyDesc</h4>
+<p><code>byKeyDesc(k)</code><br />Returns a sort object helper function, result in descending order of object key <code>k</code></p>
+<blockquote>
+<p>&gt; var ar = [{“a”:3,”b”:5},{“a”:1,”b”:6},{“a”:2,”b”:7}];
+&gt; ar.sort(byKeyDesc(‘a’))
+[{“a”:3,”b”:5},{“a”:2,”b”:7},{“a”:1,”b”:6}]
+&gt; ar.sort(byKeyDesc(‘b’))
+[{“a”:2,”b”:7},{“a”:1,”b”:6},{“a”:3,”b”:5}]</p>
+</blockquote>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">var</span> byKeyDesc = <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">k</span>)
+</span>{ <span class="hljs-keyword">return</span> <span class="hljs-function"><span class="hljs-keyword">function</span> (<span class="hljs-params">x,y</span>)
+  </span>{ <span class="hljs-keyword">return</span> moreOrLess(y[k], x[k])}}</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-107">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-107">&#182;</a>
+              </div>
+              <h4 id="byasc">byAsc</h4>
+<p><code>byAsc(x,y)</code><br />Returns a sort array helper function, result in ascending order</p>
+<blockquote>
+<p>&gt; [4,1,2].sort(byAsc)
+[1, 2, 4]</p>
+</blockquote>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">var</span> byAsc = <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">x, y</span>) </span>{ <span class="hljs-keyword">return</span> moreOrLess(x, y)}</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-108">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-108">&#182;</a>
+              </div>
+              <p><code>byDesc(x,y)</code><br />Returns a sort array helper function, result in descending order</p>
+<blockquote>
+<p>&gt; [4,1,2].sort(byDesc)
+[4, 2, 1]</p>
+</blockquote>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">var</span> byDesc = <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">x, y</span>) </span>{ <span class="hljs-keyword">return</span> moreOrLess(y, x)}</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-109">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-109">&#182;</a>
+              </div>
+              <h4 id="wsortv">wsortv</h4>
+<p><code>wsortv(x,w,wavg,maxw)</code><br />Weighted sort value calculation formula, returns a number</p>
+<blockquote>
+<p>&gt; wsortv(1,2,3,4)
+2</p>
+</blockquote>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">var</span> wsortv = <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">x, w, wavg, maxw</span>)
+</span>{ <span class="hljs-keyword">return</span> (wavg + (x - wavg) * w / maxw || <span class="hljs-number">0</span>)}</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-110">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-110">&#182;</a>
+              </div>
+              <h4 id="wsort">wsort</h4>
+<p><code>wsort(ar,war)</code><br />Weighted sort values of an array</p>
+<blockquote>
+<p>&gt; wsort([1,2,3],[3,2,1])
+[1, 1.8888888888888888, 2.111111111111111]</p>
+</blockquote>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">var</span> wsort = <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">ar,war</span>)
+</span>{ <span class="hljs-keyword">var</span> wavg = stat.wmean(ar,war);
+  <span class="hljs-keyword">var</span> maxw = stat.max(war);
+  <span class="hljs-keyword">if</span> (maxw == <span class="hljs-number">0</span>)
+  { maxw = <span class="hljs-number">1</span>}
+  <span class="hljs-keyword">var</span> res = [];
+  <span class="hljs-keyword">var</span> kli = ar.length;
+  <span class="hljs-keyword">for</span> (<span class="hljs-keyword">var</span> k=<span class="hljs-number">0</span>; k&lt;kli;  k++)
+  { res.push(wsortv(ar[k], war[k], wavg, maxw))}
+  <span class="hljs-keyword">return</span> res}</pre></div></div>
+            
+        </li>
+        
+        
+        <li id="section-111">
+            <div class="annotation">
+              
+              <div class="pilwrap ">
+                <a class="pilcrow" href="#section-111">&#182;</a>
+              </div>
+              <h4 id="tsort">tsort</h4>
+<p><code>tsort(mtx)</code><br />Topological sort
+Returns a vector that represents the reverse topological order</p>
+<blockquote>
+<p>&gt; tsort([[3,2],[2,1]])
+[1, 2, 3]</p>
+</blockquote>
+
+            </div>
+            
+            <div class="content"><div class='highlight'><pre><span class="hljs-keyword">var</span> tsort = <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">mtx</span>)
+</span>{ <span class="hljs-keyword">var</span> toposort = <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">nds, eds</span>)
+  </span>{ <span class="hljs-keyword">var</span> ndsli = nds.length;
+    <span class="hljs-keyword">var</span> res = <span class="hljs-keyword">new</span> <span class="hljs-built_in">Array</span>(ndsli);
+    <span class="hljs-keyword">var</span> visited = {};
+    <span class="hljs-keyword">var</span> i = ndsli;
+    <span class="hljs-keyword">var</span> visit = <span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">nd, j, prs</span>)
+    </span>{ <span class="hljs-keyword">if</span> (prs.indexOf(nd) &gt;= <span class="hljs-number">0</span>)
+      { <span class="hljs-keyword">throw</span> <span class="hljs-keyword">new</span> <span class="hljs-built_in">Error</span>(<span class="hljs-string">'Cyclic dependency error'</span>)}
+      <span class="hljs-keyword">if</span> (visited[j]) <span class="hljs-keyword">return</span>;
+      visited[j] = <span class="hljs-literal">true</span>;
+      <span class="hljs-keyword">var</span> outgoing = eds.filter(<span class="hljs-function"><span class="hljs-keyword">function</span>(<span class="hljs-params">edge</span>)
+				</span>{ <span class="hljs-keyword">return</span> edge[<span class="hljs-number">0</span>] === nd})
+      <span class="hljs-keyword">if</span> (j = outgoing.length)
+      { <span class="hljs-keyword">var</span> preds = prs.concat(nd)
+	<span class="hljs-keyword">do</span>
+	{ <span class="hljs-keyword">var</span> child = outgoing[--j][<span class="hljs-number">1</span>];
+          visit(child, nds.indexOf(child), preds)}
+	<span class="hljs-keyword">while</span> (j)}
+      res[--ndsli] = nd}
+    <span class="hljs-keyword">while</span> (i--)
+    { <span class="hljs-keyword">if</span> (!visited[i]) visit(nds[i], i, [])}
+    <span class="hljs-keyword">return</span> res}
+  <span class="hljs-keyword">return</span> toposort(flatuniq(mtx),mtx).reverse()}</pre></div></div>
+            
+        </li>
+        
+    </ul>
+  </div>
+</body>
+</html>
