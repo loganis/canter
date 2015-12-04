@@ -14,76 +14,124 @@
 // </table>
 //
 // > in *row1*
-// >> `row['col1']` is `'v11'`
-// >> `col['col1']` is `['v11','v21']`
+// >> `row[col1]` is `v11`
+// >> `col[col1]` is `[v11,v21]`
 //
 // > in *row2*
-// >> `row['col1']` is `'v21'`
-// >> `col['col1']` is `['v11','v21']`
+// >> `row[col1]` is `v21`
+// >> `col[col1]` is `[v11,v21]`
 
-
-// `funs`<br />Temporal demo data
-var funs = { "Page": function(row) { return row['kpia'] * 2 + row["kpib"] + sum(col['kpia']) },
-	      "Bounce": function(row) { return row['Page'] * 2 }}
-
-
-
-// ### Preprocess ###
+// ## Preprocess ##
 // Helper functions for preprocessing CQL queries
 
-// `getFnDef(f)`<br />Returns a function definition string
+// Sample data
+var demo = {
+    // Sample CQL 
+    cql1:  {typ: 'ga',
+	    pid: '12345678',
+	    beg: '2015-10-22',
+	    end: '2015-10-29',
+	    met: ' ga:sessions , ga:users ',
+	    dim: ' ga:date ',
+	    def: { 'sumcol': function(col) { return sum(col['ga:sessions']) + sum(col['ga:users'])},
+		   'sumco2': function(col) { return sum(col['ga:users'])}
+		 },
+	    fun: { '3rd': function(row) {return row['Bounce'] * 3 + 1},     
+		   'Page': function(def, row){ return row['ga:sessions'] * 2 + row['ga:users'] + def['sumcol'] },
+		   'Bounce': function(row) { return row['Page'] * 2 + row['ga:sessions']}
+		 }
+	   },
+    // Sample GA response
+    gaResp: csv2oar(",","ga:date,ga:sessions,ga:users\n20151022,24102,21212\n20151023,29564,25656\n20151024,14238,12859\n20151025,17557,15875\n20151026,24728,21523\n20151027,28305,24619\n20151028,24867,21555\n20151029,13621,12290")
+
+}
+
+// #### getFnDef ####
+// `getFnDef(f)`<br />Returns the function definition string of function `f`
+// > &gt; getFnDef(ops.inc)
+// > "function (x) { return 1 * x + 1}"
 var getFnDef = function(f)
 { if (f != undefined)
   { return f.toString()}
   else 
   { return ""}}
 
+// #### reRowCol ####
 // `reRowCol`<br />Regex for matching a row['Value'] or col["Value"]
-//var reRowCol = /(row|col)\[(\'|\")(\w+|\w+:\w+)(\'|\")\]/g;
+// > &gt; getFnDef(demo.cql1.def.sumcol).match(reRowCol)
+// > ["col['ga:sessions']", "col['ga:users']"]
 var reRowCol = /(row|col|def)\[(\'|\")([^\[\]]+)(\'|\")\]/g;
 
+// #### reObjVoK ####
 // `reObjVoK`<br />Regex for matching a Value of a Keyword: ['Value']
-//var reObjVoK = /.*?\[.(\w+|\w+:\w+).\]/;
+// > &gt; "col['ga:sessions']".replace(reObjVoK,"$1")
+// > "ga:sessions"
 var reObjVoK = /.*?\[.([^\[\]]+).\]/;
 
+// #### reGetKey ####
 // `reGetKey(s)`<br />Returns the Value of a Keyword string: ['Value']
+// > &gt; reGetKey("col['ga:sessions']")
+// > "ga:sessions"
 var reGetKey = function(s)
 { return s.replace(reObjVoK,"$1")}
 
+// #### reHasCol ####
 // `reHasCol(s)`<br />Returns the input string if it contains 'col'
+// > &gt; reHasCol("col['a']")
+// > "col['a']"
 var reHasCol = function(s)
 { if (s.match(/col/))
   { return s}}
 
+// #### reHasDef ####
+// > &gt; reHasDef("def['a']")
+// > "def['a']"
 // `reHasDef(s)`<br />Returns the input string if it contains 'def'
 var reHasDef = function(s)
 { if (s.match(/def/))
   { return s}}
 
+// #### reHasRow ####
 // `reHasRow(s)`<br />Returns the input string if it contains 'row'
+// > &gt; reHasRow("row['a']")
+// > "row['a']"
 var reHasRow = function(s)
 { if (s.match(/row/))
   { return s}}
 
+/// #### getFnCols ####
 // `getFnCols(f)`<br />Returns `col` matches from a function definition
+// > &gt; getFnCols(demo.cql1.def.sumcol)
+// > ["ga:sessions", "ga:users"]
 var getFnCols = function(f)
 { return uniq(map(reGetKey,getFnDef(f).match(reRowCol).filter(reHasCol)))}
 
+// #### getFnDefs ####
 // `getFnDefs(f)`<br />Returns `def` matches from a function definition
+// > &gt; getFnDefs(demo.cql1.fun.Page)
+// > ["sumcol"]
 var getFnDefs = function(f)
 { return uniq(map(reGetKey,getFnDef(f).match(reRowCol).filter(reHasDef)))}
 
+// #### getFnRows ####
 // `getFnRows(f)`<br />Returns `row` matches from a function definition
+// > &gt; getFnRows(demo.cql1.fun.Page)
+// > ["ga:sessions", "ga:users"]
 var getFnRows = function(f)
 { return uniq(map(reGetKey,getFnDef(f).match(reRowCol).filter(reHasRow)))}
 
+// #### getFnRowsCols ####
 // `getFnRowsCols(f)`<br />Returns `row` and `col` matches from a function definition
+// > &gt; getFnRowsCols(demo.cql1.fun.Page)
+// > ["ga:sessions", "ga:users", "sumcol"]
 var getFnRowsCols = function(f)
 { return uniq(map(reGetKey,getFnDef(f).match(reRowCol)))}
 
-
+// #### dependentCols ####
 // `dependentCols(obj)`<br />Returns object dependencies for object `fun:`
 // Each `key` depends on its `values`
+// > &gt; dependentCols(demo.cql1.fun)
+// > {"3rd":["Bounce"],"Page":["ga:sessions","ga:users","sumcol"],"Bounce":["Page","ga:sessions"]}
 var dependentCols = function(obj)
 { var res = {};
   map(function(k)
@@ -91,8 +139,11 @@ var dependentCols = function(obj)
      keys(obj))
   return res}
 
-
+// #### columnDependecies ####
 // `columnDependecies(obj)`<br />Returns an array of dependency key pairs form dependentCols object
+// > &gt; var dcs =dependentCols(demo.cql1.fun)
+// > &gt; columnDependecies(dcs)
+// > [["3rd","Bounce"],["Page","ga:sessions"],["Page","ga:users"],["Page","sumcol"],["Bounce","Page"],["Bounce","ga:sessions"]]
 var columnDependecies = function(obj)
 { var res = [];
   map(function(k)
@@ -101,8 +152,11 @@ var columnDependecies = function(obj)
      keys(obj));
   return res}
 
-
+// #### columnProcessingOrder ####
 // `columnProcessingOrder(obj)`<br />Returns the column processing order for object `fun:`
+// > &gt; var obj = mergeObjects(demo.cql1.fun, demo.cql1.def)
+// > &gt; columnProcessingOrder(obj)
+// > ["ga:users", "sumco2", "ga:sessions", "sumcol", "Page", "Bounce", "3rd"]
 var columnProcessingOrder = comp(
     "->",
     dependentCols,
@@ -200,7 +254,7 @@ var gooh = {
 
     // ### Spreadsheet ###
 
-    // `gooh.reateSheet(s)`<br />Returns a new sheet object
+    // `gooh.createSheet(s)`<br />Returns a new sheet object
     createSheet: function(s) 
     { return SpreadsheetApp.create(s)},
 
@@ -249,15 +303,15 @@ var goog = {
       map(sheet.appendRow,
 	  gooh.getGaRows(obj))},
 
-    // `goog.exportToSheet(sheet,oar)`<br />Exports dataset `oar` to a `sheet` object.
-    objectToSheet: function(sheet,oar)
+    // `goog.oar2Sheet(sheet,oar)`<br />Exports dataset `oar` to a `sheet` object.
+    oar2Sheet: function(sheet,oar)
     { var colnames = colNames(oar);
       sheet.appendRow(colnames);
       map(sheet.appendRow,
 	  oar2mtx(selectColumn(colnames, oar)))},
 
-    // `goog.gaToObject(obj)``<br />Returns a dataset object from GA query result object `obj`
-    gaToObject: function(obj)
+    // `goog.ga2oar(obj)``<br />Returns a dataset object from GA query result object `obj`
+    ga2oar: function(obj)
     { return mtx2oar(cons(gooh.getGaColNames(obj),
 				 gooh.getGaRows(obj)))}
 
@@ -270,24 +324,9 @@ var cqlTypes =
      "mcf": goog.runMcfGet,
      "rt": goog.runRtGet};
 
-// `funs`<br />Temporal demo data
-var cql = {typ: "ga",
-	   pid: '12345678',
-	   beg: '2015-10-22',
-	   end: '2015-10-29',
-	   met: ' ga:sessions , ga:users ',
-	   dim: ' ga:date ',
-	   def: { "sumcol": function(col) { return sum(col["ga:sessions"]) + sum(col['ga:users'])},
-		  "sumco2": function(col) { return sum(col["ga:users"])}
-		},
-	   fun: { "3rd": function(row) {return row["Bounce"] * 3 + 1},     
-		  "Page": function(def, row){ return row["ga:sessions"] * 2 + row["ga:users"] + def['sumcol'] },
-		  "Bounce": function(row) { return row['Page'] * 2 + row["ga:sessions"]}
-		}
-	  };
 
-var gaResp = csv2oar(",","ga:date,ga:sessions,ga:users\n20151022,24102,21212\n20151023,29564,25656\n20151024,14238,12859\n20151025,17557,15875\n20151026,24728,21523\n20151027,28305,24619\n20151028,24867,21555\n20151029,13621,12290");
-var processCql = function(cq)
+
+var processCql = function(cql)
 { // per: , fun: , col:
     var basecols = merge(cq.met.split(","), cq.dim.split(","));
     basecols = map(strim, basecols);
@@ -297,7 +336,7 @@ var processCql = function(cq)
     //console.log("fundef "+ JSON.stringify(fundef));
     //console.log("funcols "+ JSON.stringify(funcols));
     // run base query based on typ:
-    var gaResp1 = 1;
+    var gaResp = demo.gaResp;
     // init temp calc storage
     var col = {}; 
     var def = {};
